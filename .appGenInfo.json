@@ -1,0 +1,23 @@
+{
+  "generationParameters": {
+    "generationDate": "Tue Aug 18 2026 15:37:04 GMT+0000 (Coordinated Universal Time)",
+    "generatorPlatform": "SAP Business Application Studio",
+    "serviceType": "None",
+    "metadataFilename": "",
+    "serviceUrl": "N/A",
+    "appName": "wfaltamat",
+    "appTitle": "Entrada de Material/Producto por Workflow",
+    "appDescription": "Entrada de Material/Producto por Workflow",
+    "appNamespace": "com.alen.mm",
+    "ui5Theme": "sap_horizon",
+    "ui5Version": "1.136.14",
+    "enableEslint": true,
+    "enableTypeScript": true,
+    "showMockDataInfo": false,
+    "generatorVersion": "1.31.0",
+    "template": "Basic",
+    "generatorName": "SAP Fiori Application Generator",
+    "entityRelatedConfig": [],
+    "launchText": "To launch the generated application, run the following from the generated application root folder:\n\n```\n    npm start\n```"
+  }
+}

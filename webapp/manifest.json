@@ -1,0 +1,122 @@
+{
+  "_version": "1.73.1",
+  "sap.app": {
+    "id": "com.alen.mm.wfaltamat",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:basic",
+      "version": "1.31.0",
+      "toolsId": "482d3da5-90e3-4527-9140-f770475b1a89"
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": true,
+    "dependencies": {
+      "minUI5Version": "1.136.14",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "com.alen.mm.wfaltamat.i18n.i18n"
+        }
+      },
+      "valueHelp": {
+        "type": "sap.ui.model.json.JSONModel",
+        "uri": "localService/mockdata/ValueHelp.json"
+      },
+      "responsableVista": {
+        "type": "sap.ui.model.json.JSONModel",
+        "uri": "localService/mockdata/ObjetoCustom1.json"
+      },
+      "combinacionVenta": {
+        "type": "sap.ui.model.json.JSONModel",
+        "uri": "localService/mockdata/ObjetoCustom2.json"
+      },
+      "tipoEntradaCatalogo": {
+        "type": "sap.ui.model.json.JSONModel",
+        "uri": "localService/mockdata/ObjetoCustom3.json"
+      },
+      "tipoMaterialRango": {
+        "type": "sap.ui.model.json.JSONModel",
+        "uri": "localService/mockdata/TipoMaterialRango.json"
+      },
+      "statusVistas": {
+        "type": "sap.ui.model.json.JSONModel",
+        "uri": "localService/mockdata/StatusVistas.json"
+      }
+    },
+    "resources": {
+      "css": [
+        {
+          "uri": "css/style.css"
+        }
+      ]
+    },
+    "routing": {
+      "config": {
+        "routerClass": "sap.m.routing.Router",
+        "controlAggregation": "pages",
+        "controlId": "app",
+        "transition": "slide",
+        "type": "View",
+        "viewType": "XML",
+        "path": "com.alen.mm.wfaltamat.view",
+        "async": true,
+        "viewPath": "com.alen.mm.wfaltamat.view"
+      },
+      "routes": [
+        {
+          "name": "RouteMain",
+          "pattern": ":?query:",
+          "target": [
+            "TargetMain"
+          ]
+        }
+      ],
+      "targets": {
+        "TargetMain": {
+          "id": "Main",
+          "name": "Main"
+        }
+      }
+    },
+    "rootView": {
+      "viewName": "com.alen.mm.wfaltamat.view.App",
+      "type": "XML",
+      "id": "App",
+      "async": true
+    }
+  }
+}

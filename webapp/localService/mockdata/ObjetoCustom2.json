@@ -1,0 +1,7 @@
+{
+  "_comment": "DUMMY — Objeto Custom 2: Combinaciones de Vistas de Venta. Llave literal del MD: TipoMaterial + OrgVentas; CanalDistribucion es campo de datos (una sola combinación válida por Org.Ventas+TipoMaterial). Ver nota en types.ts (CombinacionVentaConfig).",
+  "rows": [
+    { "tipoMaterial": "FERT", "orgVentas": "1000", "canalDistribucion": "10" },
+    { "tipoMaterial": "FERT", "orgVentas": "2000", "canalDistribucion": "20" }
+  ]
+}

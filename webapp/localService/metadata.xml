@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Metadata OData v4 SIMULADA — GAP_P2P_07 (Alta/Extensión de Materiales, migración ZWFMM01).
+
+  Documento de DISEÑO: define el contrato EDM objetivo para cuando el RAP Business Object
+  real quede expuesto (Clean Core). HOY la app NO consume este archivo en runtime — usa
+  JSONModel local (ver webapp/localService/mockdata/*.json) por instrucción explícita del MD,
+  Sección 5 "Estrategia de Implementación (Mocking)". Sirve como referencia de nombres de
+  entidad/propiedad para que el mock y el futuro servicio real queden alineados 1:1.
+-->
+<edmx:Edmx xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx" Version="4.0">
+  <edmx:DataServices>
+    <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="com.alen.mm.wfaltamat">
+
+      <!-- ============ Entidad principal: Solicitud de Alta/Extensión (MaterialHeader) ============ -->
+      <EntityType Name="MaterialHeader">
+        <Key>
+          <PropertyRef Name="SolicitudId"/>
+        </Key>
+        <Property Name="SolicitudId" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="ModoSolicitud" Type="Edm.String" MaxLength="10" Nullable="false"/>
+        <Property Name="Material" Type="Edm.String" MaxLength="18"/> <!-- MATNR -->
+        <Property Name="TipoMaterial" Type="Edm.String" MaxLength="4" Nullable="false"/> <!-- MTART -->
+        <Property Name="Ramo" Type="Edm.String" MaxLength="1"/> <!-- MBRSH -->
+        <Property Name="TipoEntrada" Type="Edm.String" MaxLength="3"/>
+        <Property Name="Folio" Type="Edm.String" MaxLength="10"/>
+        <Property Name="Centro" Type="Edm.String" MaxLength="4" Nullable="false"/> <!-- WERKS -->
+        <Property Name="OrgVentas" Type="Edm.String" MaxLength="4"/> <!-- VKORG -->
+        <Property Name="MaterialMaquilado" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/> <!-- ZMAQ1 -->
+        <Property Name="MaterialExportacion" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/> <!-- ZINDEXP -->
+        <Property Name="ModoProceso" Type="Edm.String" MaxLength="1"/> <!-- IND_FD: M|D -->
+        <Property Name="DescripcionEs" Type="Edm.String" MaxLength="40"/> <!-- MAKTX -->
+        <Property Name="DescripcionEn" Type="Edm.String" MaxLength="40"/> <!-- MAKTX réplica EN -->
+        <Property Name="UmBase" Type="Edm.String" MaxLength="3"/> <!-- MEINS -->
+        <Property Name="Sector" Type="Edm.String" MaxLength="2"/> <!-- SPART -->
+        <Property Name="GrupoTipoPosGral" Type="Edm.String" MaxLength="4"/> <!-- TPTM-MTPOS -->
+        <Property Name="GrupoArticulos" Type="Edm.String" MaxLength="9"/> <!-- T023-MATKL -->
+        <Property Name="JerarquiaProductos" Type="Edm.String" MaxLength="18"/> <!-- T179-PRODH -->
+        <Property Name="EstadoProceso" Type="Edm.String" MaxLength="12" Nullable="false"/> <!-- Captura|Confirmado|Agregado -->
+        <NavigationProperty Name="Vistas" Type="Collection(com.alen.mm.wfaltamat.VistaSeleccionada)" ContainsTarget="true"/>
+      </EntityType>
+
+      <!-- Composición 1:N — vistas congeladas al momento de "Agregar" (MD Sección 5, columna "Vistas a crear") -->
+      <EntityType Name="VistaSeleccionada">
+        <Key>
+          <PropertyRef Name="Vista"/>
+        </Key>
+        <Property Name="Vista" Type="Edm.String" MaxLength="4" Nullable="false"/>
+        <Property Name="DescripcionVista" Type="Edm.String" MaxLength="40"/>
+        <Property Name="UsuarioResponsable" Type="Edm.String" MaxLength="12"/>
+      </EntityType>
+
+      <!-- ============ Objeto Custom 1: Responsables por Vista ============ -->
+      <!-- Llave: Centro + TipoMaterial + Vista + MaterialExportacion (confirmado: XFELD es parte de la llave) -->
+      <EntityType Name="ResponsableVista">
+        <Key>
+          <PropertyRef Name="Centro"/>
+          <PropertyRef Name="TipoMaterial"/>
+          <PropertyRef Name="Vista"/>
+          <PropertyRef Name="MaterialExportacion"/>
+        </Key>
+        <Property Name="Centro" Type="Edm.String" MaxLength="4" Nullable="false"/>
+        <Property Name="TipoMaterial" Type="Edm.String" MaxLength="4" Nullable="false"/>
+        <Property Name="Vista" Type="Edm.String" MaxLength="4" Nullable="false"/>
+        <Property Name="MaterialExportacion" Type="Edm.Boolean" Nullable="false"/> <!-- XFELD -->
+        <Property Name="DescripcionVista" Type="Edm.String" MaxLength="40" Nullable="false"/>
+        <Property Name="UsuarioResponsable1" Type="Edm.String" MaxLength="12" Nullable="false"/>
+        <Property Name="UsuarioResponsable2" Type="Edm.String" MaxLength="12"/>
+      </EntityType>
+
+      <!-- ============ Objeto Custom 2: Combinaciones de Vistas de Venta ============ -->
+      <!-- Llave: TipoMaterial + OrgVentas (literal del MD); CanalDistribucion es campo de datos -->
+      <EntityType Name="CombinacionVentaVista">
+        <Key>
+          <PropertyRef Name="TipoMaterial"/>
+          <PropertyRef Name="OrgVentas"/>
+        </Key>
+        <Property Name="TipoMaterial" Type="Edm.String" MaxLength="4" Nullable="false"/>
+        <Property Name="OrgVentas" Type="Edm.String" MaxLength="4" Nullable="false"/>
+        <Property Name="CanalDistribucion" Type="Edm.String" MaxLength="2" Nullable="false"/>
+      </EntityType>
+
+      <!-- ============ Objeto Custom 3: Catálogo de Tipos de Entrada ============ -->
+      <EntityType Name="TipoEntradaCatalogo">
+        <Key>
+          <PropertyRef Name="IdTipoEntrada"/>
+        </Key>
+        <Property Name="IdTipoEntrada" Type="Edm.String" MaxLength="3" Nullable="false"/>
+        <Property Name="Descripcion" Type="Edm.String" MaxLength="40" Nullable="false"/>
+      </EntityType>
+
+      <!-- ============ T134 SIMULADO: Rango de Numeración por Tipo de Material ============ -->
+      <!-- No es un Objeto Custom del MD; acordado con el arquitecto para resolver la regla de
+           validación UI #1 (bloqueo/obligatoriedad de MATNR según rango interno/externo). -->
+      <EntityType Name="TipoMaterialRango">
+        <Key>
+          <PropertyRef Name="TipoMaterial"/>
+        </Key>
+        <Property Name="TipoMaterial" Type="Edm.String" MaxLength="4" Nullable="false"/>
+        <Property Name="Rango" Type="Edm.String" MaxLength="7" Nullable="false"/> <!-- Interno | Externo -->
+      </EntityType>
+
+      <!-- ============ MARC-PSTAT / SWWWIHEAD simulados (semáforos, MD Sección 4.1) ============ -->
+      <EntityType Name="StatusVista">
+        <Key>
+          <PropertyRef Name="Material"/>
+          <PropertyRef Name="Centro"/>
+          <PropertyRef Name="Vista"/>
+        </Key>
+        <Property Name="Material" Type="Edm.String" MaxLength="18" Nullable="false"/>
+        <Property Name="Centro" Type="Edm.String" MaxLength="4" Nullable="false"/>
+        <Property Name="Vista" Type="Edm.String" MaxLength="4" Nullable="false"/>
+        <Property Name="Creada" Type="Edm.Boolean" Nullable="false"/> <!-- MARC-PSTAT -->
+        <Property Name="EnWf" Type="Edm.Boolean" Nullable="false"/> <!-- SWWWIHEAD -->
+        <Property Name="WorkItemId" Type="Edm.String" MaxLength="12"/> <!-- SWWWIHEAD/SWWUSERWI -->
+      </EntityType>
+
+      <!-- ============ Bound Action: disparador de Workflow (Clean Core) ============ -->
+      <!-- Encapsula, del lado RAP, la llamada a BAPI_MATERIAL_SAVEDATA + inicio del Workflow.
+           El cliente SAPUI5 solo conoce esta Action; nunca invoca la BAPI directamente. -->
+      <Action Name="enviarWorkflow" IsBound="true">
+        <Parameter Name="_it" Type="Collection(com.alen.mm.wfaltamat.MaterialHeader)" Nullable="false"/>
+      </Action>
+      <ActionImport Name="EnviarWorkflow" Action="com.alen.mm.wfaltamat.enviarWorkflow"/>
+
+      <EntityContainer Name="EntityContainer">
+        <EntitySet Name="MaterialHeaderSet" EntityType="com.alen.mm.wfaltamat.MaterialHeader"/>
+        <EntitySet Name="ResponsableVistaSet" EntityType="com.alen.mm.wfaltamat.ResponsableVista"/>
+        <EntitySet Name="CombinacionVentaVistaSet" EntityType="com.alen.mm.wfaltamat.CombinacionVentaVista"/>
+        <EntitySet Name="TipoEntradaCatalogoSet" EntityType="com.alen.mm.wfaltamat.TipoEntradaCatalogo"/>
+        <EntitySet Name="TipoMaterialRangoSet" EntityType="com.alen.mm.wfaltamat.TipoMaterialRango"/>
+        <EntitySet Name="StatusVistaSet" EntityType="com.alen.mm.wfaltamat.StatusVista"/>
+      </EntityContainer>
+
+    </Schema>
+  </edmx:DataServices>
+</edmx:Edmx>
