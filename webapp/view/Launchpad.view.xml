@@ -5,8 +5,7 @@
   displayBlock="true">
   <Page id="lpPageLaunchpad" title="{i18n>lpTitle}" showNavButton="false" class="sapUiContentPadding">
     <content>
-      <Title id="lpTitleSubtitle" text="{i18n>lpSubtitle}" level="H2" class="sapUiSmallMarginBottom"/>
-      <Title id="lpTitleGroupMateriales" text="{i18n>lpGroupMateriales}" level="H3" class="sapUiSmallMarginTop sapUiSmallMarginBottom"/>
+      <Title id="lpTitleGroupMateriales" text="{i18n>lpGroupMateriales}" level="H3" class="sapUiSmallMarginBottom"/>
       <HBox id="lpHboxTiles" wrap="Wrap">
         <GenericTile
           id="lpTileProto1"

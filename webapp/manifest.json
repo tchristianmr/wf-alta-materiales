@@ -104,7 +104,7 @@
       "routes": [
         {
           "name": "launchpad",
-          "pattern": ":?query:",
+          "pattern": "",
           "target": ["TargetLaunchpad"]
         },
         {
@@ -136,22 +136,22 @@
         "TargetWizardLaunchpad": {
           "id": "WizardLaunchpad",
           "name": "WizardLaunchpad",
-          "viewPath": "com.alen.mm.wfaltamat.wizard.view"
+          "path": "com.alen.mm.wfaltamat.wizard.view"
         },
         "TargetWizard": {
           "id": "Wizard",
           "name": "Wizard",
-          "viewPath": "com.alen.mm.wfaltamat.wizard.view"
+          "path": "com.alen.mm.wfaltamat.wizard.view"
         },
         "TargetFCLLaunchpad": {
           "id": "FCLLaunchpad",
           "name": "FCLLaunchpad",
-          "viewPath": "com.alen.mm.wfaltamat.fcl.view"
+          "path": "com.alen.mm.wfaltamat.fcl.view"
         },
         "TargetFCL": {
           "id": "FCL",
           "name": "FCL",
-          "viewPath": "com.alen.mm.wfaltamat.fcl.view"
+          "path": "com.alen.mm.wfaltamat.fcl.view"
         }
       }
     },
