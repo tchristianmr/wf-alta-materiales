@@ -1,0 +1,7 @@
+{
+  "_comment": "DUMMY — simula MARA (maestro de materiales), usado solo para el autofill de 'Datos Básicos' en modo Extensión (MD Paso 1). No es un Objeto Custom del MD; agregado para que el flujo de Extensión sea coherente con los materiales ya referenciados en StatusVistas.json.",
+  "rows": [
+    { "material": "000000000100000501", "tipoMaterial": "HALB", "ramo": "M", "descripcionEs": "SUBENSAMBLE INTERNO TEST", "umBase": "KG", "sector": "01", "grupoTipoPosGral": "NORM", "grupoArticulos": "DP0015", "jerarquiaProductos": "" },
+    { "material": "ALFA-FERT-2024", "tipoMaterial": "FERT", "ramo": "Q", "descripcionEs": "PRODUCTO EXPORTACION ALFA", "umBase": "CJ", "sector": "02", "grupoTipoPosGral": "NORM", "grupoArticulos": "DP0009", "jerarquiaProductos": "003003003901860015" }
+  ]
+}

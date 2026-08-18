@@ -1,8 +1,8 @@
 import Opa5 from "sap/ui/test/Opa5";
 
-const sViewName = "Main";
+const sViewName = "Launchpad";
 
-export default class MainPage extends Opa5 {
+export default class LaunchpadPage extends Opa5 {
 	// Actions
 
 
@@ -19,5 +19,3 @@ export default class MainPage extends Opa5 {
 	}
 
 }
-
-

@@ -1,0 +1,21 @@
+<mvc:View
+  controllerName="com.alen.mm.wfaltamat.fcl.controller.FCLLaunchpad"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  displayBlock="true">
+  <Page id="flpPage" title="{i18n>flpTitle}" showNavButton="true" navButtonPress=".onVolver" class="sapUiContentPadding">
+    <content>
+      <Title id="flpTitleGroupMateriales" text="{i18n>flpGroupMateriales}" level="H3" class="sapUiSmallMarginBottom"/>
+      <HBox id="flpHboxTiles" wrap="Wrap">
+        <GenericTile
+          id="flpTileGestionar"
+          class="sapUiTinyMarginEnd sapUiTinyMarginBottom"
+          header="{i18n>flpTileGestionar}"
+          subheader="{i18n>flpTileGestionarSub}"
+          frameType="TwoByOne"
+          headerImage="sap-icon://columns"
+          press=".onGestionarMateriales"/>
+      </HBox>
+    </content>
+  </Page>
+</mvc:View>

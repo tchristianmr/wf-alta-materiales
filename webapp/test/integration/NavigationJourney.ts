@@ -1,7 +1,7 @@
 /*global QUnit*/
 import opaTest from "sap/ui/test/opaQunit";
 import AppPage from "./pages/AppPage";
-import ViewPage from "./pages/MainPage";
+import ViewPage from "./pages/LaunchpadPage";
 
 import Opa5 from "sap/ui/test/Opa5";
 

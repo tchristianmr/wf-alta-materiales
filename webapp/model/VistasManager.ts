@@ -41,6 +41,15 @@ export default class VistasManager {
   }
 
   /**
+   * Regla de validación UI #1 (segunda mitad): en modo Creación con rango Externo, el número
+   * de material tecleado no debe existir ya en MARA. Simulado reutilizando StatusVistaSimulado
+   * (MARC-PSTAT) — cualquier material con registros de vista ahí ya existe en el sistema.
+   */
+  public existeMaterialEnSistema(sMaterial: string): boolean {
+    return this.statusVistas.some((s) => s.material === sMaterial);
+  }
+
+  /**
    * MD Sección 4.1: calcula las vistas requeridas para Centro+TipoMaterial+MaterialExportacion
    * (llave completa de Objeto Custom 1, confirmada con el arquitecto), fusionadas con los
    * semáforos de StatusVistaSimulado. Los semáforos solo aplican en modo Extensión — un

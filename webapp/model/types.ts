@@ -142,6 +142,20 @@ export interface TipoEntradaConfig {
   descripcion: string; // CHAR40 en MD 2.1 ("Desc. Tip. Entr."); la def. del Objeto Custom 3 dice CHAR30 — uso CHAR40 (el más detallado) y lo señalo.
 }
 
+// --- MARA simulado: solo para autofill de Datos Básicos en modo Extensión (nuevo, no es Objeto Custom del MD) --
+
+export interface MaterialMaestroConfig {
+  material: string;
+  tipoMaterial: string;
+  ramo: string;
+  descripcionEs: string;
+  umBase: string;
+  sector: string;
+  grupoTipoPosGral: string;
+  grupoArticulos: string;
+  jerarquiaProductos: string;
+}
+
 // --- T134 simulado: Rango de Numeración por Tipo de Material (nuevo, acordado con el arquitecto) --
 
 export interface TipoMaterialRangoConfig {

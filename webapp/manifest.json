@@ -38,7 +38,8 @@
       "minUI5Version": "1.136.14",
       "libs": {
         "sap.m": {},
-        "sap.ui.core": {}
+        "sap.ui.core": {},
+        "sap.f": {}
       }
     },
     "contentDensities": {
@@ -75,6 +76,10 @@
       "statusVistas": {
         "type": "sap.ui.model.json.JSONModel",
         "uri": "localService/mockdata/StatusVistas.json"
+      },
+      "materialMaestro": {
+        "type": "sap.ui.model.json.JSONModel",
+        "uri": "localService/mockdata/MARA.json"
       }
     },
     "resources": {
@@ -98,17 +103,55 @@
       },
       "routes": [
         {
-          "name": "RouteMain",
+          "name": "launchpad",
           "pattern": ":?query:",
-          "target": [
-            "TargetMain"
-          ]
+          "target": ["TargetLaunchpad"]
+        },
+        {
+          "name": "wizardLaunchpad",
+          "pattern": "wizard",
+          "target": ["TargetWizardLaunchpad"]
+        },
+        {
+          "name": "wizard",
+          "pattern": "wizard/{modo}",
+          "target": ["TargetWizard"]
+        },
+        {
+          "name": "fclLaunchpad",
+          "pattern": "fcl",
+          "target": ["TargetFCLLaunchpad"]
+        },
+        {
+          "name": "fcl",
+          "pattern": "fcl/gestionar",
+          "target": ["TargetFCL"]
         }
       ],
       "targets": {
-        "TargetMain": {
-          "id": "Main",
-          "name": "Main"
+        "TargetLaunchpad": {
+          "id": "Launchpad",
+          "name": "Launchpad"
+        },
+        "TargetWizardLaunchpad": {
+          "id": "WizardLaunchpad",
+          "name": "WizardLaunchpad",
+          "viewPath": "com.alen.mm.wfaltamat.wizard.view"
+        },
+        "TargetWizard": {
+          "id": "Wizard",
+          "name": "Wizard",
+          "viewPath": "com.alen.mm.wfaltamat.wizard.view"
+        },
+        "TargetFCLLaunchpad": {
+          "id": "FCLLaunchpad",
+          "name": "FCLLaunchpad",
+          "viewPath": "com.alen.mm.wfaltamat.fcl.view"
+        },
+        "TargetFCL": {
+          "id": "FCL",
+          "name": "FCL",
+          "viewPath": "com.alen.mm.wfaltamat.fcl.view"
         }
       }
     },
