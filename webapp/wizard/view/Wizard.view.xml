@@ -164,11 +164,6 @@
                       <Input id="wizInpDenomEs" value="{/header/descripcionEs}" editable="{= ${/header/modoSolicitud} !== 'extension' &amp;&amp; ${/header/estadoProceso} === 'Captura' }" change=".onDenominacionChange" width="100%"/>
                     </f:fields>
                   </f:FormElement>
-                  <f:FormElement id="wizFeDenomEn" label="{i18n>lblDenominacionEn}">
-                    <f:fields>
-                      <Input id="wizInpDenomEn" value="{/header/descripcionEn}" editable="false" width="100%"/>
-                    </f:fields>
-                  </f:FormElement>
                   <f:FormElement id="wizFeUmBase" label="{i18n>lblUmBase}">
                     <f:fields>
                       <ComboBox
@@ -176,6 +171,7 @@
                         selectedKey="{/header/umBase}"
                         items="{valueHelp>/unidades}"
                         editable="{= ${/header/modoSolicitud} !== 'extension' &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
+                        change=".onDatosBasicosChange"
                         width="100%">
                         <core:Item id="wizItemUmBase" key="{valueHelp>key}" text="{valueHelp>text}"/>
                       </ComboBox>
@@ -188,6 +184,7 @@
                         selectedKey="{/header/sector}"
                         items="{valueHelp>/sectores}"
                         editable="{= ${/header/modoSolicitud} !== 'extension' &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
+                        change=".onDatosBasicosChange"
                         width="100%">
                         <core:Item id="wizItemSector" key="{valueHelp>key}" text="{valueHelp>text}"/>
                       </ComboBox>
@@ -200,6 +197,7 @@
                         selectedKey="{/header/grupoTipoPosGral}"
                         items="{valueHelp>/gruposTipoPosGral}"
                         editable="{= ${/header/modoSolicitud} !== 'extension' &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
+                        change=".onDatosBasicosChange"
                         width="100%">
                         <core:Item id="wizItemGrupoTipoPosGral" key="{valueHelp>key}" text="{valueHelp>text}"/>
                       </ComboBox>
@@ -212,6 +210,7 @@
                         selectedKey="{/header/grupoArticulos}"
                         items="{valueHelp>/gruposArticulos}"
                         editable="{= ${/header/modoSolicitud} !== 'extension' &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
+                        change=".onDatosBasicosChange"
                         width="100%">
                         <core:Item id="wizItemGrupoArticulos" key="{valueHelp>key}" text="{valueHelp>text}"/>
                       </ComboBox>
