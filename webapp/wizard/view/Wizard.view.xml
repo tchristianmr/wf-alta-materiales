@@ -41,10 +41,14 @@
                       <Input
                         id="wizInpMaterial"
                         value="{/header/material}"
-                        editable="{= ${/header/modoSolicitud} === 'extension' || ${/ui/rangoNumeracion} === 'Externo' }"
+                        editable="{= ${/header/modoSolicitud} === 'extension' || ${/ui/rangoNumeracion} !== 'Interno' }"
                         placeholder="{= ${/ui/rangoNumeracion} === 'Interno' &amp;&amp; ${/header/modoSolicitud} === 'creacion' ? 'Se asigna automáticamente (rango interno)' : 'Número de material' }"
                         change=".onMaterialChange"
                         width="100%"/>
+                      <Text
+                        id="wizTxtMaterialDesc"
+                        text="{= 'Descripción: ' + (${/header/descripcionEs} ? ${/header/descripcionEs} : '(se captura en el Paso 2, Datos Básicos)') }"
+                        class="sapUiTinyMarginTop"/>
                     </f:fields>
                   </f:FormElement>
                   <f:FormElement id="wizFeTipoMaterial" label="{i18n>lblTipoMaterial}">
@@ -80,14 +84,10 @@
                         items="{tipoEntradaCatalogo>/rows}"
                         editable="{= ${/header/estadoProceso} === 'Captura' }"
                         change=".onTipoEntradaChange"
-                        width="100%">
-                        <core:Item id="wizItemTipoEntrada" key="{tipoEntradaCatalogo>idTipoEntrada}" text="{tipoEntradaCatalogo>idTipoEntrada} — {tipoEntradaCatalogo>descripcion}"/>
+                        width="60%">
+                        <core:Item id="wizItemTipoEntrada" key="{tipoEntradaCatalogo>idTipoEntrada}" text="{tipoEntradaCatalogo>idTipoEntrada}"/>
                       </ComboBox>
-                    </f:fields>
-                  </f:FormElement>
-                  <f:FormElement id="wizFeDescTipoEntrada" label="{i18n>lblDescTipoEntrada}">
-                    <f:fields>
-                      <Text id="wizTxtDescTipoEntrada" text="{/header/tipoEntradaDesc}"/>
+                      <Text id="wizTxtDescTipoEntrada" text="{/header/tipoEntradaDesc}" class="sapUiTinyMarginTop"/>
                     </f:fields>
                   </f:FormElement>
                   <f:FormElement id="wizFeFolio" label="{i18n>lblFolio}">
