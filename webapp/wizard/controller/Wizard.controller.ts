@@ -284,6 +284,7 @@ export default class Wizard extends Controller {
     const aGrid = (oModel.getProperty("/grid") as ResultGrid[]) || [];
     aGrid.push(oFila);
     oModel.setProperty("/grid", aGrid);
+    this.syncHayRegistrosEnGrid();
     oModel.setProperty("/header/estadoProceso", "Agregado");
 
     this.clearStrip();
@@ -296,6 +297,14 @@ export default class Wizard extends Controller {
     const oValueHelpModel = this.getView()!.getModel("valueHelp") as JSONModel;
     const aCentros = (oValueHelpModel.getProperty("/centros") as CentroCodigoTexto[]) || [];
     return aCentros.find((c) => c.key === sCentro)?.pais ?? "";
+  }
+
+  /** Mantiene /ui/hayRegistrosEnGrid sincronizado — usado por "Enviar Workflow" en vez de una
+   * expression binding directa sobre ${/grid}.length, por consistencia con step1/2Validated. */
+  private syncHayRegistrosEnGrid(): void {
+    const oModel = this.getModel();
+    const aGrid = (oModel.getProperty("/grid") as ResultGrid[]) || [];
+    oModel.setProperty("/ui/hayRegistrosEnGrid", aGrid.length > 0);
   }
 
   // --- Paso 4: Revisión y Confirmación (Sección 5) ---------------------------------------------
@@ -312,6 +321,7 @@ export default class Wizard extends Controller {
     const aGrid = (oModel.getProperty("/grid") as ResultGrid[]).slice();
     aGrid.splice(iIndex, 1);
     oModel.setProperty("/grid", aGrid);
+    this.syncHayRegistrosEnGrid();
   }
 
   /** MD Paso 5: reinicia el asistente para capturar otro material, conservando el Grid acumulado. */
@@ -343,6 +353,7 @@ export default class Wizard extends Controller {
         { duration: 5000 }
       );
       oModel.setProperty("/grid", []);
+      this.syncHayRegistrosEnGrid();
       this.onOtroMaterial(_oEvent);
     };
 

@@ -392,7 +392,7 @@
           <Toolbar id="wizTbStep4" class="sapUiSmallMarginTop">
             <ToolbarSpacer id="wizTbSpacer4"/>
             <Button id="wizBtnOtroMaterial" text="Agregar Otro Material" type="Transparent" press=".onOtroMaterial"/>
-            <Button id="wizBtnEnviarWorkflow" text="{i18n>btnEnviarWorkflow}" type="Emphasized" icon="sap-icon://workflow-tasks" enabled="{= ${/grid}.length > 0 }" press=".onEnviarWorkflow"/>
+            <Button id="wizBtnEnviarWorkflow" text="{i18n>btnEnviarWorkflow}" type="Emphasized" icon="sap-icon://workflow-tasks" enabled="{/ui/hayRegistrosEnGrid}" press=".onEnviarWorkflow"/>
           </Toolbar>
         </WizardStep>
       </Wizard>

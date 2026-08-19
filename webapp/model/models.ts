@@ -71,7 +71,8 @@ export function createSolicitudModel(sModoSolicitud: ModoSolicitud = "creacion")
       messageStripVisible: false,
       step1Validated: false,
       step2Validated: false,
-      step3Validated: false
+      step3Validated: false,
+      hayRegistrosEnGrid: false
     },
     vistasCrear: [],
     vistasVenta: [],
