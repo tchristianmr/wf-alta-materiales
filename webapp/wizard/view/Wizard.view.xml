@@ -60,7 +60,7 @@
                         editable="{= ${/header/estadoProceso} === 'Captura' }"
                         change=".onTipoMaterialChange"
                         width="100%">
-                        <core:Item id="wizItemTipoMaterial" key="{key}" text="{text}"/>
+                        <core:Item id="wizItemTipoMaterial" key="{valueHelp>key}" text="{valueHelp>text}"/>
                       </ComboBox>
                     </f:fields>
                   </f:FormElement>
@@ -72,7 +72,7 @@
                         items="{valueHelp>/ramos}"
                         editable="{= ${/header/estadoProceso} === 'Captura' }"
                         width="100%">
-                        <core:Item id="wizItemRamo" key="{key}" text="{text}"/>
+                        <core:Item id="wizItemRamo" key="{valueHelp>key}" text="{valueHelp>text}"/>
                       </ComboBox>
                     </f:fields>
                   </f:FormElement>
@@ -104,7 +104,7 @@
                         editable="{= ${/header/estadoProceso} === 'Captura' }"
                         change=".onCentroChange"
                         width="100%">
-                        <core:Item id="wizItemCentro" key="{key}" text="{text}"/>
+                        <core:Item id="wizItemCentro" key="{valueHelp>key}" text="{valueHelp>text}"/>
                       </ComboBox>
                     </f:fields>
                   </f:FormElement>
@@ -117,7 +117,7 @@
                         editable="{= ${/header/estadoProceso} === 'Captura' }"
                         placeholder="Solo si aplica vista Ventas"
                         width="100%">
-                        <core:Item id="wizItemOrgVentas" key="{key}" text="{text}"/>
+                        <core:Item id="wizItemOrgVentas" key="{valueHelp>key}" text="{valueHelp>text}"/>
                       </ComboBox>
                     </f:fields>
                   </f:FormElement>
@@ -177,7 +177,7 @@
                         items="{valueHelp>/unidades}"
                         editable="{= ${/header/modoSolicitud} !== 'extension' &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
                         width="100%">
-                        <core:Item id="wizItemUmBase" key="{key}" text="{text}"/>
+                        <core:Item id="wizItemUmBase" key="{valueHelp>key}" text="{valueHelp>text}"/>
                       </ComboBox>
                     </f:fields>
                   </f:FormElement>
@@ -189,7 +189,7 @@
                         items="{valueHelp>/sectores}"
                         editable="{= ${/header/modoSolicitud} !== 'extension' &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
                         width="100%">
-                        <core:Item id="wizItemSector" key="{key}" text="{text}"/>
+                        <core:Item id="wizItemSector" key="{valueHelp>key}" text="{valueHelp>text}"/>
                       </ComboBox>
                     </f:fields>
                   </f:FormElement>
@@ -201,7 +201,7 @@
                         items="{valueHelp>/gruposTipoPosGral}"
                         editable="{= ${/header/modoSolicitud} !== 'extension' &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
                         width="100%">
-                        <core:Item id="wizItemGrupoTipoPosGral" key="{key}" text="{text}"/>
+                        <core:Item id="wizItemGrupoTipoPosGral" key="{valueHelp>key}" text="{valueHelp>text}"/>
                       </ComboBox>
                     </f:fields>
                   </f:FormElement>
@@ -213,7 +213,7 @@
                         items="{valueHelp>/gruposArticulos}"
                         editable="{= ${/header/modoSolicitud} !== 'extension' &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
                         width="100%">
-                        <core:Item id="wizItemGrupoArticulos" key="{key}" text="{text}"/>
+                        <core:Item id="wizItemGrupoArticulos" key="{valueHelp>key}" text="{valueHelp>text}"/>
                       </ComboBox>
                     </f:fields>
                   </f:FormElement>
