@@ -156,11 +156,16 @@ export default class Wizard extends Controller {
         oModel.setProperty("/header/grupoArticulos", oMaestro.grupoArticulos);
         oModel.setProperty("/header/jerarquiaProductos", oMaestro.jerarquiaProductos);
       } else {
-        this.showStrip(`El material ${oHeader.material} no se encontró en el maestro (MARA simulado).`, "Warning");
+        this.showStrip("El material capturado no existe.", "Error");
       }
     }
     this.recalcStep1Validated();
     this.recalcStep2Validated();
+  }
+
+  /** MD Paso 1 (Extensión): true si el material tecleado existe en el maestro (MARA simulado). */
+  private materialExisteEnMaestro(sMaterial: string): boolean {
+    return this.getConfigRows<MaterialMaestroConfig>("materialMaestro").some((m) => m.material === sMaterial);
   }
 
   private recalcStep1Validated(): void {
@@ -168,12 +173,25 @@ export default class Wizard extends Controller {
     const oHeader = oModel.getProperty("/header") as { modoSolicitud: ModoSolicitud; centro: string; tipoMaterial: string; material: string };
     const sRango = oModel.getProperty("/ui/rangoNumeracion") as string | undefined;
 
+    // MD Paso 1 (Extensión): el material es obligatorio y debe existir en el maestro (MARA simulado).
+    if (oHeader.modoSolicitud === "extension") {
+      if (!oHeader.material) {
+        oModel.setProperty("/ui/step1Validated", false);
+        return;
+      }
+      if (!this.materialExisteEnMaestro(oHeader.material)) {
+        this.showStrip("El material capturado no existe.", "Error");
+        oModel.setProperty("/ui/step1Validated", false);
+        return;
+      }
+    }
+
     if (!oHeader.centro || !oHeader.tipoMaterial) {
       oModel.setProperty("/ui/step1Validated", false);
       return;
     }
 
-    if (oHeader.modoSolicitud === "extension" || sRango === "Externo") {
+    if (sRango === "Externo") {
       if (!oHeader.material) {
         oModel.setProperty("/ui/step1Validated", false);
         return;

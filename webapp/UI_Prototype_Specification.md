@@ -59,6 +59,7 @@ Esta sección orquesta la lógica de visibilidad del Workflow (Zona 4) - Lógica
 
 ## 3. Reglas de Validación UI
 1. **Rango de Números:** Si el tipo de material es interno, el campo "Material" debe bloquearse. Si es externo, es obligatorio y debe validarse que no exista en MARA.
+   - **En modo Extensión** (independientemente del rango): el campo "Material" es de captura obligatoria. El sistema valida su existencia contra MARA; si el material capturado no existe, el sistema bloquea el avance y muestra el mensaje: **"El material capturado no existe."**
 2. **Validación FERT:** Para centros en México/USA, la unidad de medida debe ser obligatoriamente 'Caja' (CJ) o 'Palet' (PAL).
 3. **Botón Confirmar:** Al presionar, se bloquean las secciones 1 y 2, y se habilita el botón "Agregar".
 4. **Botón Agregar:** Solo permite añadir al grid si la vista seleccionada no está ya creada ni está actualmente en proceso de Workflow.
@@ -73,7 +74,7 @@ Desde el punto de vista del **Usuario Solicitante**, la interacción con el prot
 ### Paso 1: Definición del Escenario (Creación vs. Extensión)
 El usuario inicia seleccionando mediante un `Radio Button` o `Checkbox` si desea crear un material nuevo o extender uno existente:
 - **Si es Creación:** El sistema valida el rango de números según el Tipo de Material. Si es interno, el sistema asignará el número al final; si es externo, el usuario debe teclearlo y el sistema validará en tiempo real que no exista ya en el catálogo.
-- **Si es Extensión:** El usuario ingresa un número de material existente. Al dar "Enter", el sistema autocompleta automáticamente los campos de Datos Básicos (Ramo, Denominación, UM, etc.) trayendo la información desde el maestro de materiales (MARA). Estos campos se vuelven no editables para garantizar la integridad.
+- **Si es Extensión:** El usuario ingresa un número de material existente (captura obligatoria). El sistema valida contra MARA; si el código no existe, lanza el error "El material capturado no existe" y no permite avanzar. Si el material existe, el sistema autocompleta automáticamente los siguientes campos desde el maestro de materiales (MARA): **Tipo de Material, Ramo, Denominación, UM, Sector, Grupo de Artículos y Jerarquía de Productos.** Estos campos se muestran solo para visualización y no pueden ser modificados por el usuario durante la extensión.
 
 ### Paso 2: Bloqueo de Niveles Organizacionales
 Una vez capturados los Datos Generales (Sección 1) y Datos Básicos (Sección 2), el usuario debe presionar el botón **"Confirmar Datos"**.
