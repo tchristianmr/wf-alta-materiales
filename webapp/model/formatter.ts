@@ -45,5 +45,10 @@ export default {
     }
     const aSeleccionadas = aVistas.filter((v) => v.crear).map((v) => v.vista);
     return aSeleccionadas.length > 0 ? aSeleccionadas.join(", ") : "(ninguna)";
+  },
+
+  /** TEMPORAL — vuelca el objeto tal cual está en el modelo, sin ambigüedad undefined/null/"". */
+  debugStringify(oValue: unknown): string {
+    return JSON.stringify(oValue === undefined ? "<<undefined>>" : oValue);
   }
 };

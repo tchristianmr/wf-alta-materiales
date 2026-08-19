@@ -25,14 +25,11 @@
         icon="sap-icon://locked"
         class="sapUiSmallMarginBottom"/>
 
-      <!-- DEBUG TEMPORAL — quitar tras diagnosticar. Muestra valores crudos del modelo, sin formatters. -->
+      <!-- DEBUG TEMPORAL — quitar tras diagnosticar. JSON.stringify crudo, sin ambigüedad undefined/null/"". -->
       <Panel id="wizDebugPanel" headerText="DEBUG (temporal)" class="sapUiSmallMarginBottom">
-        <Text id="wizDebugEstado" text="estadoProceso = '{header/estadoProceso}'"/>
-        <Text id="wizDebugModoProceso" text="modoProceso = '{header/modoProceso}'"/>
-        <Text id="wizDebugModoSolicitud" text="modoSolicitud = '{header/modoSolicitud}'"/>
-        <Text id="wizDebugCentro" text="centro = '{header/centro}'"/>
-        <Text id="wizDebugMsgVisible" text="messageStripVisible = {ui/messageStripVisible}"/>
-        <Text id="wizDebugHasModel" text="{= ${header/estadoProceso} === undefined ? 'MODELO NO RESUELTO' : 'modelo OK' }"/>
+        <Text id="wizDebugHeader" text="{path:'header', formatter:'.formatter.debugStringify'}"/>
+        <Text id="wizDebugUi" text="{path:'ui', formatter:'.formatter.debugStringify'}"/>
+        <Text id="wizDebugRoot" text="{path:'/', formatter:'.formatter.debugStringify'}"/>
       </Panel>
 
       <Wizard id="wizWizardAlta" showNextButton="false">
