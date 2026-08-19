@@ -33,6 +33,12 @@ export default class Wizard extends Controller {
   public formatter = formatter;
 
   public onInit(): void {
+    // Modelo por defecto inmediato: la vista nunca debe quedar sin modelo. Si esto se omite,
+    // los bindings simples (ej. "visible") caen al defaultValue del control (true) en vez de
+    // a nuestro valor, y las expression bindings evalúan sobre "undefined" — bloqueando campos
+    // silenciosamente. onRouteMatched reemplaza este modelo por el de modo correcto poco después.
+    this.getView()!.setModel(createSolicitudModel("creacion"));
+
     const oRouter = this.getRouter();
     oRouter.getRoute("wizard")?.attachPatternMatched(this.onRouteMatched, this);
   }
