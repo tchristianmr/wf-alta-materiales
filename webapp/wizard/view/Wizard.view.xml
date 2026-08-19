@@ -10,32 +10,25 @@
     <content>
       <MessageStrip
         id="wizMsgStrip"
-        text="{ui/messageStripText}"
-        type="{ui/messageStripType}"
+        text="{/ui/messageStripText}"
+        type="{/ui/messageStripType}"
         showIcon="true"
         showCloseButton="false"
-        visible="{ui/messageStripVisible}"
+        visible="{/ui/messageStripVisible}"
         class="sapUiSmallMarginBottom"/>
 
       <ObjectStatus
         id="wizStatusModo"
         title="{i18n>lblModoSolicitud}"
-        text="{parts:[{path:'header/modoSolicitud'}], formatter:'.formatter.modoSolicitudTexto'}"
+        text="{parts:[{path:'/header/modoSolicitud'}], formatter:'.formatter.modoSolicitudTexto'}"
         state="Information"
         icon="sap-icon://locked"
         class="sapUiSmallMarginBottom"/>
 
-      <!-- DEBUG TEMPORAL — quitar tras diagnosticar. JSON.stringify crudo, sin ambigüedad undefined/null/"". -->
-      <Panel id="wizDebugPanel" headerText="DEBUG (temporal)" class="sapUiSmallMarginBottom">
-        <Text id="wizDebugHeader" text="{path:'header', formatter:'.formatter.debugStringify'}"/>
-        <Text id="wizDebugUi" text="{path:'ui', formatter:'.formatter.debugStringify'}"/>
-        <Text id="wizDebugRoot" text="{path:'/', formatter:'.formatter.debugStringify'}"/>
-      </Panel>
-
       <Wizard id="wizWizardAlta" showNextButton="false">
 
         <!-- Paso 1: Datos Generales -->
-        <WizardStep id="wizStepGenerales" title="{i18n>stepDatosGenerales}" validated="{ui/step1Validated}">
+        <WizardStep id="wizStepGenerales" title="{i18n>stepDatosGenerales}" validated="{/ui/step1Validated}">
           <f:Form id="wizFormGenerales" editable="true">
             <f:layout>
               <f:ColumnLayout id="wizColLayoutGenerales" columnsM="2" columnsL="3" columnsXL="3" labelCellsLarge="4"/>
@@ -47,9 +40,9 @@
                     <f:fields>
                       <Input
                         id="wizInpMaterial"
-                        value="{header/material}"
-                        editable="{= ${header/modoSolicitud} === 'extension' || ${ui/rangoNumeracion} === 'Externo' }"
-                        placeholder="{= ${ui/rangoNumeracion} === 'Interno' &amp;&amp; ${header/modoSolicitud} === 'creacion' ? 'Se asigna automáticamente (rango interno)' : 'Número de material' }"
+                        value="{/header/material}"
+                        editable="{= ${/header/modoSolicitud} === 'extension' || ${/ui/rangoNumeracion} === 'Externo' }"
+                        placeholder="{= ${/ui/rangoNumeracion} === 'Interno' &amp;&amp; ${/header/modoSolicitud} === 'creacion' ? 'Se asigna automáticamente (rango interno)' : 'Número de material' }"
                         change=".onMaterialChange"
                         width="100%"/>
                     </f:fields>
@@ -58,9 +51,9 @@
                     <f:fields>
                       <ComboBox
                         id="wizCbTipoMaterial"
-                        selectedKey="{header/tipoMaterial}"
+                        selectedKey="{/header/tipoMaterial}"
                         items="{valueHelp>/tiposMaterial}"
-                        editable="{= ${header/estadoProceso} === 'Captura' }"
+                        editable="{= ${/header/estadoProceso} === 'Captura' }"
                         change=".onTipoMaterialChange"
                         width="100%">
                         <core:Item id="wizItemTipoMaterial" key="{key}" text="{text}"/>
@@ -71,9 +64,9 @@
                     <f:fields>
                       <ComboBox
                         id="wizCbRamo"
-                        selectedKey="{header/ramo}"
+                        selectedKey="{/header/ramo}"
                         items="{valueHelp>/ramos}"
-                        editable="{= ${header/estadoProceso} === 'Captura' }"
+                        editable="{= ${/header/estadoProceso} === 'Captura' }"
                         width="100%">
                         <core:Item id="wizItemRamo" key="{key}" text="{text}"/>
                       </ComboBox>
@@ -83,9 +76,9 @@
                     <f:fields>
                       <ComboBox
                         id="wizCbTipoEntrada"
-                        selectedKey="{header/tipoEntrada}"
+                        selectedKey="{/header/tipoEntrada}"
                         items="{tipoEntradaCatalogo>/rows}"
-                        editable="{= ${header/estadoProceso} === 'Captura' }"
+                        editable="{= ${/header/estadoProceso} === 'Captura' }"
                         change=".onTipoEntradaChange"
                         width="100%">
                         <core:Item id="wizItemTipoEntrada" key="{tipoEntradaCatalogo>idTipoEntrada}" text="{tipoEntradaCatalogo>idTipoEntrada} — {tipoEntradaCatalogo>descripcion}"/>
@@ -94,21 +87,21 @@
                   </f:FormElement>
                   <f:FormElement id="wizFeDescTipoEntrada" label="{i18n>lblDescTipoEntrada}">
                     <f:fields>
-                      <Text id="wizTxtDescTipoEntrada" text="{header/tipoEntradaDesc}"/>
+                      <Text id="wizTxtDescTipoEntrada" text="{/header/tipoEntradaDesc}"/>
                     </f:fields>
                   </f:FormElement>
                   <f:FormElement id="wizFeFolio" label="{i18n>lblFolio}">
                     <f:fields>
-                      <Input id="wizInpFolio" value="{header/folio}" editable="{= ${header/estadoProceso} === 'Captura' }" width="100%"/>
+                      <Input id="wizInpFolio" value="{/header/folio}" editable="{= ${/header/estadoProceso} === 'Captura' }" width="100%"/>
                     </f:fields>
                   </f:FormElement>
                   <f:FormElement id="wizFeCentro" label="{i18n>lblCentro}">
                     <f:fields>
                       <ComboBox
                         id="wizCbCentro"
-                        selectedKey="{header/centro}"
+                        selectedKey="{/header/centro}"
                         items="{valueHelp>/centros}"
-                        editable="{= ${header/estadoProceso} === 'Captura' }"
+                        editable="{= ${/header/estadoProceso} === 'Captura' }"
                         change=".onCentroChange"
                         width="100%">
                         <core:Item id="wizItemCentro" key="{key}" text="{text}"/>
@@ -119,9 +112,9 @@
                     <f:fields>
                       <ComboBox
                         id="wizCbOrgVentas"
-                        selectedKey="{header/orgVentas}"
+                        selectedKey="{/header/orgVentas}"
                         items="{valueHelp>/orgVentas}"
-                        editable="{= ${header/estadoProceso} === 'Captura' }"
+                        editable="{= ${/header/estadoProceso} === 'Captura' }"
                         placeholder="Solo si aplica vista Ventas"
                         width="100%">
                         <core:Item id="wizItemOrgVentas" key="{key}" text="{text}"/>
@@ -130,17 +123,17 @@
                   </f:FormElement>
                   <f:FormElement id="wizFeMaquilado" label="{i18n>lblMaterialMaquilado}">
                     <f:fields>
-                      <CheckBox id="wizCbMaquilado" selected="{header/materialMaquilado}" enabled="{= ${header/estadoProceso} === 'Captura' }"/>
+                      <CheckBox id="wizCbMaquilado" selected="{/header/materialMaquilado}" enabled="{= ${/header/estadoProceso} === 'Captura' }"/>
                     </f:fields>
                   </f:FormElement>
                   <f:FormElement id="wizFeExportacion" label="{i18n>lblMaterialExportacion}">
                     <f:fields>
-                      <CheckBox id="wizCbExportacion" selected="{header/materialExportacion}" enabled="{= ${header/estadoProceso} === 'Captura' }"/>
+                      <CheckBox id="wizCbExportacion" selected="{/header/materialExportacion}" enabled="{= ${/header/estadoProceso} === 'Captura' }"/>
                     </f:fields>
                   </f:FormElement>
                   <f:FormElement id="wizFeModoProceso" label="{i18n>lblModoProceso}">
                     <f:fields>
-                      <RadioButtonGroup id="wizRbgModoProceso" columns="2" selectedIndex="{= ${header/modoProceso} === 'M' ? 0 : 1 }" editable="{= ${header/estadoProceso} === 'Captura' }" select=".onModoProcesoChange">
+                      <RadioButtonGroup id="wizRbgModoProceso" columns="2" selectedIndex="{= ${/header/modoProceso} === 'M' ? 0 : 1 }" editable="{= ${/header/estadoProceso} === 'Captura' }" select=".onModoProcesoChange">
                         <RadioButton id="wizRbFabricacion" text="{i18n>lblFabricacion}"/>
                         <RadioButton id="wizRbDistribucion" text="{i18n>lblDistribucion}"/>
                       </RadioButtonGroup>
@@ -152,13 +145,13 @@
           </f:Form>
           <Toolbar id="wizTbStep1" class="sapUiSmallMarginTop">
             <ToolbarSpacer id="wizTbSpacer1"/>
-            <Button id="wizBtnLimpiar" text="{i18n>btnLimpiar}" type="Transparent" enabled="{= ${header/estadoProceso} === 'Captura' }" press=".onLimpiar"/>
-            <Button id="wizBtnSiguiente1" text="Siguiente" type="Emphasized" enabled="{ui/step1Validated}" press=".onSiguientePaso1"/>
+            <Button id="wizBtnLimpiar" text="{i18n>btnLimpiar}" type="Transparent" enabled="{= ${/header/estadoProceso} === 'Captura' }" press=".onLimpiar"/>
+            <Button id="wizBtnSiguiente1" text="Siguiente" type="Emphasized" enabled="{/ui/step1Validated}" press=".onSiguientePaso1"/>
           </Toolbar>
         </WizardStep>
 
         <!-- Paso 2: Datos Básicos -->
-        <WizardStep id="wizStepBasicos" title="{i18n>stepDatosBasicos}" validated="{ui/step2Validated}">
+        <WizardStep id="wizStepBasicos" title="{i18n>stepDatosBasicos}" validated="{/ui/step2Validated}">
           <f:Form id="wizFormBasicos" editable="true">
             <f:layout>
               <f:ColumnLayout id="wizColLayoutBasicos" columnsM="2" columnsL="3" columnsXL="3" labelCellsLarge="4"/>
@@ -168,21 +161,21 @@
                 <f:formElements>
                   <f:FormElement id="wizFeDenomEs" label="{i18n>lblDenominacionEs}">
                     <f:fields>
-                      <Input id="wizInpDenomEs" value="{header/descripcionEs}" editable="{= ${header/modoSolicitud} !== 'extension' &amp;&amp; ${header/estadoProceso} === 'Captura' }" change=".onDenominacionChange" width="100%"/>
+                      <Input id="wizInpDenomEs" value="{/header/descripcionEs}" editable="{= ${/header/modoSolicitud} !== 'extension' &amp;&amp; ${/header/estadoProceso} === 'Captura' }" change=".onDenominacionChange" width="100%"/>
                     </f:fields>
                   </f:FormElement>
                   <f:FormElement id="wizFeDenomEn" label="{i18n>lblDenominacionEn}">
                     <f:fields>
-                      <Input id="wizInpDenomEn" value="{header/descripcionEn}" editable="false" width="100%"/>
+                      <Input id="wizInpDenomEn" value="{/header/descripcionEn}" editable="false" width="100%"/>
                     </f:fields>
                   </f:FormElement>
                   <f:FormElement id="wizFeUmBase" label="{i18n>lblUmBase}">
                     <f:fields>
                       <ComboBox
                         id="wizCbUmBase"
-                        selectedKey="{header/umBase}"
+                        selectedKey="{/header/umBase}"
                         items="{valueHelp>/unidades}"
-                        editable="{= ${header/modoSolicitud} !== 'extension' &amp;&amp; ${header/estadoProceso} === 'Captura' }"
+                        editable="{= ${/header/modoSolicitud} !== 'extension' &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
                         width="100%">
                         <core:Item id="wizItemUmBase" key="{key}" text="{text}"/>
                       </ComboBox>
@@ -192,9 +185,9 @@
                     <f:fields>
                       <ComboBox
                         id="wizCbSector"
-                        selectedKey="{header/sector}"
+                        selectedKey="{/header/sector}"
                         items="{valueHelp>/sectores}"
-                        editable="{= ${header/modoSolicitud} !== 'extension' &amp;&amp; ${header/estadoProceso} === 'Captura' }"
+                        editable="{= ${/header/modoSolicitud} !== 'extension' &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
                         width="100%">
                         <core:Item id="wizItemSector" key="{key}" text="{text}"/>
                       </ComboBox>
@@ -204,9 +197,9 @@
                     <f:fields>
                       <ComboBox
                         id="wizCbGrupoTipoPosGral"
-                        selectedKey="{header/grupoTipoPosGral}"
+                        selectedKey="{/header/grupoTipoPosGral}"
                         items="{valueHelp>/gruposTipoPosGral}"
-                        editable="{= ${header/modoSolicitud} !== 'extension' &amp;&amp; ${header/estadoProceso} === 'Captura' }"
+                        editable="{= ${/header/modoSolicitud} !== 'extension' &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
                         width="100%">
                         <core:Item id="wizItemGrupoTipoPosGral" key="{key}" text="{text}"/>
                       </ComboBox>
@@ -216,9 +209,9 @@
                     <f:fields>
                       <ComboBox
                         id="wizCbGrupoArticulos"
-                        selectedKey="{header/grupoArticulos}"
+                        selectedKey="{/header/grupoArticulos}"
                         items="{valueHelp>/gruposArticulos}"
-                        editable="{= ${header/modoSolicitud} !== 'extension' &amp;&amp; ${header/estadoProceso} === 'Captura' }"
+                        editable="{= ${/header/modoSolicitud} !== 'extension' &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
                         width="100%">
                         <core:Item id="wizItemGrupoArticulos" key="{key}" text="{text}"/>
                       </ComboBox>
@@ -228,9 +221,9 @@
                     <f:fields>
                       <Input
                         id="wizInpJerarquia"
-                        value="{header/jerarquiaProductos}"
-                        editable="{= ${header/modoSolicitud} !== 'extension' &amp;&amp; ${header/estadoProceso} === 'Captura' }"
-                        placeholder="{= ${header/tipoMaterial} === 'FERT' ? 'Obligatorio para FERT' : '' }"
+                        value="{/header/jerarquiaProductos}"
+                        editable="{= ${/header/modoSolicitud} !== 'extension' &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
+                        placeholder="{= ${/header/tipoMaterial} === 'FERT' ? 'Obligatorio para FERT' : '' }"
                         change=".onDatosBasicosChange"
                         width="100%"/>
                     </f:fields>
@@ -241,7 +234,7 @@
           </f:Form>
           <Toolbar id="wizTbStep2" class="sapUiSmallMarginTop">
             <ToolbarSpacer id="wizTbSpacer2"/>
-            <Button id="wizBtnConfirmarDatos" text="{i18n>btnConfirmarDatos}" type="Emphasized" enabled="{= ${ui/step2Validated} &amp;&amp; ${header/estadoProceso} === 'Captura' }" press=".onConfirmarDatos"/>
+            <Button id="wizBtnConfirmarDatos" text="{i18n>btnConfirmarDatos}" type="Emphasized" enabled="{= ${/ui/step2Validated} &amp;&amp; ${/header/estadoProceso} === 'Captura' }" press=".onConfirmarDatos"/>
           </Toolbar>
         </WizardStep>
 
@@ -249,8 +242,8 @@
         <WizardStep id="wizStepVistas" title="{i18n>stepSeleccionVistas}" validated="true" activate=".onStepVistasActivate">
           <IconTabBar id="wizTabsVistas" expandable="false" class="sapUiResponsiveContentPadding">
             <items>
-              <IconTabFilter id="wizTabVistasACrear" text="{i18n>tabVistasACrear}" key="crear" count="{= ${vistasCrear}.length }">
-                <Table id="wizTblVistasACrear" items="{vistasCrear}" mode="None" noDataText="No hay vistas configuradas (Objeto Custom 1) para este Centro/Tipo Material/Material de Exportación.">
+              <IconTabFilter id="wizTabVistasACrear" text="{i18n>tabVistasACrear}" key="crear" count="{= ${/vistasCrear}.length }">
+                <Table id="wizTblVistasACrear" items="{/vistasCrear}" mode="None" noDataText="No hay vistas configuradas (Objeto Custom 1) para este Centro/Tipo Material/Material de Exportación.">
                   <columns>
                     <Column id="wizColChkCrear" width="3rem"><Text id="wizTxtColChk" text=""/></Column>
                     <Column id="wizColVista"><Text id="wizTxtColVista" text="{i18n>colVista}"/></Column>
@@ -274,8 +267,8 @@
                 </Table>
               </IconTabFilter>
 
-              <IconTabFilter id="wizTabVistasCreadas" text="{i18n>tabVistasCreadas}" key="creadas" count="{path:'vistasCrear', formatter:'.formatter.contarCreadas'}">
-                <Table id="wizTblVistasCreadas" items="{path:'vistasCrear', filters:[{path:'creada',operator:'EQ',value1:true}]}" mode="None" noDataText="Sin vistas creadas (MARC-PSTAT).">
+              <IconTabFilter id="wizTabVistasCreadas" text="{i18n>tabVistasCreadas}" key="creadas" count="{path:'/vistasCrear', formatter:'.formatter.contarCreadas'}">
+                <Table id="wizTblVistasCreadas" items="{path:'/vistasCrear', filters:[{path:'creada',operator:'EQ',value1:true}]}" mode="None" noDataText="Sin vistas creadas (MARC-PSTAT).">
                   <columns>
                     <Column id="wizColCreadasVista"><Text id="wizTxtColCreadasVista" text="{i18n>colVista}"/></Column>
                     <Column id="wizColCreadasDesc"><Text id="wizTxtColCreadasDesc" text="{i18n>colDescripcionVista}"/></Column>
@@ -291,8 +284,8 @@
                 </Table>
               </IconTabFilter>
 
-              <IconTabFilter id="wizTabVistasEnWF" text="{i18n>tabVistasEnWF}" key="enwf" count="{path:'vistasCrear', formatter:'.formatter.contarEnWF'}">
-                <Table id="wizTblVistasEnWF" items="{path:'vistasCrear', filters:[{path:'enWF',operator:'EQ',value1:true}]}" mode="None" noDataText="Sin tareas pendientes (SWWWIHEAD/SWWUSERWI).">
+              <IconTabFilter id="wizTabVistasEnWF" text="{i18n>tabVistasEnWF}" key="enwf" count="{path:'/vistasCrear', formatter:'.formatter.contarEnWF'}">
+                <Table id="wizTblVistasEnWF" items="{path:'/vistasCrear', filters:[{path:'enWF',operator:'EQ',value1:true}]}" mode="None" noDataText="Sin tareas pendientes (SWWWIHEAD/SWWUSERWI).">
                   <columns>
                     <Column id="wizColEnWFVista"><Text id="wizTxtColEnWFVista" text="{i18n>colVista}"/></Column>
                     <Column id="wizColEnWFDesc"><Text id="wizTxtColEnWFDesc" text="{i18n>colDescripcionVista}"/></Column>
@@ -310,8 +303,8 @@
                 </Table>
               </IconTabFilter>
 
-              <IconTabFilter id="wizTabVistasVenta" text="{i18n>tabVistasDeVentas}" key="ventas" count="{= ${vistasVenta}.length }">
-                <Table id="wizTblVistasVenta" items="{vistasVenta}" mode="None" noDataText="Sin combinaciones de venta configuradas (simula consulta MVKE).">
+              <IconTabFilter id="wizTabVistasVenta" text="{i18n>tabVistasDeVentas}" key="ventas" count="{= ${/vistasVenta}.length }">
+                <Table id="wizTblVistasVenta" items="{/vistasVenta}" mode="None" noDataText="Sin combinaciones de venta configuradas (simula consulta MVKE).">
                   <columns>
                     <Column id="wizColVentaOrg"><Text id="wizTxtColVentaOrg" text="{i18n>colOrgVenta}"/></Column>
                     <Column id="wizColVentaCanal"><Text id="wizTxtColVentaCanal" text="{i18n>colCanalDist}"/></Column>
@@ -327,8 +320,8 @@
                 </Table>
               </IconTabFilter>
 
-              <IconTabFilter id="wizTabCanalesConf" text="{i18n>tabCanalesDistConf}" key="canales" count="{= ${canalesConf}.length }">
-                <Table id="wizTblCanalesConf" items="{canalesConf}" mode="None" noDataText="Sin canales configurados (Objeto Custom 2).">
+              <IconTabFilter id="wizTabCanalesConf" text="{i18n>tabCanalesDistConf}" key="canales" count="{= ${/canalesConf}.length }">
+                <Table id="wizTblCanalesConf" items="{/canalesConf}" mode="None" noDataText="Sin canales configurados (Objeto Custom 2).">
                   <columns>
                     <Column id="wizColCanalConf"><Text id="wizTxtColCanalConf" text="{i18n>colCanalDist}"/></Column>
                   </columns>
@@ -354,7 +347,7 @@
           <Panel id="wizPanelGrid" headerText="{i18n>titleGrid}" expandable="false">
             <Table
               id="wizGridSolicitudes"
-              items="{grid}"
+              items="{/grid}"
               mode="None"
               noDataText="Aún no ha agregado ningún registro.">
               <columns>
@@ -400,7 +393,7 @@
           <Toolbar id="wizTbStep4" class="sapUiSmallMarginTop">
             <ToolbarSpacer id="wizTbSpacer4"/>
             <Button id="wizBtnOtroMaterial" text="Agregar Otro Material" type="Transparent" press=".onOtroMaterial"/>
-            <Button id="wizBtnEnviarWorkflow" text="{i18n>btnEnviarWorkflow}" type="Emphasized" icon="sap-icon://workflow-tasks" enabled="{= ${grid}.length > 0 }" press=".onEnviarWorkflow"/>
+            <Button id="wizBtnEnviarWorkflow" text="{i18n>btnEnviarWorkflow}" type="Emphasized" icon="sap-icon://workflow-tasks" enabled="{= ${/grid}.length > 0 }" press=".onEnviarWorkflow"/>
           </Toolbar>
         </WizardStep>
       </Wizard>
