@@ -97,8 +97,9 @@ Al presionar "Agregar", el usuario recibe feedback inmediato del sistema. El pro
 - Que exista un responsable configurado en el **Objeto Custom 1** para cada vista solicitada.
 
 ### Paso 5: Consolidación y Envío (El Detonador)
-Si las validaciones son exitosas, la solicitud baja al **Grid de la Sección 5**. 
-- El usuario puede repetir los pasos anteriores para agregar diferentes combinaciones de Material/Centro en una sola sesión de trabajo.
+Si las validaciones son exitosas, la solicitud baja al **Grid de la Sección 5**.
+- **En modo Creación:** el usuario puede repetir los pasos anteriores (botón "Agregar Otro Material") para agregar diferentes combinaciones de Material/Centro en una sola sesión de trabajo.
+- **En modo Extensión:** no aplica agregar otro material — cada sesión extiende un único material existente, así que el botón "Agregar Otro Material" no se muestra; tras "Agregar" el usuario pasa directo a revisar y enviar.
 - El usuario revisa el resumen en el grid (puede eliminar líneas si se equivocó).
 - Finalmente, presiona **"Enviar Workflow"**. En este momento, el usuario recibe una confirmación de que el material ha sido creado de forma básica y que las tareas han sido distribuidas a los responsables (Ventas, Compras, Contabilidad, etc.).
 
