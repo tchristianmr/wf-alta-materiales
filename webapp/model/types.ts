@@ -202,3 +202,30 @@ export interface ContextoValidacionAgregar {
   orgVentas: string;
   umBase: string;
 }
+
+// --- Prototipo 2 (FCL / Split App) — carrito de solicitudes -------------------------------------
+
+/** Estado de tránsito de un ítem del carrito (propuesta-2-split-app.md v2, Sección 2). */
+export type EstadoEnvio = "Listo" | "Enviando" | "Enviado";
+
+/**
+ * Ítem del carrito del Panel Izquierdo (Master). A diferencia de ResultGrid (una proyección
+ * plana usada solo para las columnas del listado/grid del Wizard), este snapshot conserva el
+ * MaterialHeader y las vistas completas tal como quedaron al presionar "Agregar al Listado",
+ * para poder reconstruir el detalle EXACTO en modo Solo Lectura al seleccionar el ítem
+ * (propuesta-2-split-app.md, Sección 3, Regla 1).
+ */
+export interface SolicitudCarritoItem {
+  id: string; // = header.solicitudId al momento de agregar
+  header: MaterialHeader;
+  vistasSeleccionadas: VistasConfig[]; // snapshot completo de vistasCrear (incluye no seleccionadas)
+  vistasVenta: { orgVentas: string; canalDistribucion: string }[];
+  canalesConf: { canal: string }[];
+  filaGrid: ResultGrid; // proyección para las columnas del listado Master
+  estadoEnvio: EstadoEnvio;
+  // -- Derivados de (modoSolicitud, estadoEnvio) por calcularEstadoVisualCarrito(), materializados
+  //    aquí para que el sap.m.ObjectStatus del listado no dependa de un formatter multi-parte --
+  estadoIconSrc: string;
+  estadoTexto: string;
+  estadoState: "Success" | "Information" | "Warning" | "None";
+}

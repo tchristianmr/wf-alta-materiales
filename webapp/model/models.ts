@@ -80,3 +80,29 @@ export function createSolicitudModel(sModoSolicitud: ModoSolicitud = "creacion")
     grid: []
   });
 }
+
+/**
+ * Modelo local del Prototipo 2 (FCL / Split App, propuesta-2-split-app.md). A diferencia del
+ * Wizard, aquí no hay pasos: un único `ui/formValidated` gobierna el botón "Confirmar Datos",
+ * y `ui/modoLectura` + `ui/carritoSeleccionadoId` controlan si el panel Detail muestra la
+ * captura activa o el detalle de solo lectura de un ítem ya guardado en el carrito.
+ */
+export function createCarritoModel(): JSONModel {
+  return new JSONModel({
+    header: createMaterialHeaderDraft("creacion"),
+    ui: {
+      messageStripText: "",
+      messageStripType: "None",
+      messageStripVisible: false,
+      formValidated: false,
+      rangoNumeracion: undefined,
+      modoLectura: false,
+      carritoSeleccionadoId: null,
+      hayRegistrosEnCarrito: false
+    },
+    vistasCrear: [],
+    vistasVenta: [],
+    canalesConf: [],
+    carrito: []
+  });
+}

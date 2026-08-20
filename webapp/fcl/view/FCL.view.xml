@@ -1,0 +1,346 @@
+<mvc:View
+  controllerName="com.alen.mm.wfaltamat.fcl.controller.FCL"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  xmlns:f="sap.ui.layout.form"
+  xmlns:fcl="sap.f"
+  xmlns:core="sap.ui.core"
+  displayBlock="true"
+  height="100%">
+  <fcl:FlexibleColumnLayout id="fclLayout" layout="TwoColumnsMidExpanded">
+
+    <fcl:beginColumnPages>
+      <Page id="fclMasterPage" title="{i18n>fclListTitle}" showNavButton="true" navButtonPress=".onVolver">
+        <subHeader>
+          <Bar id="fclMasterSubHeader">
+            <contentLeft>
+              <SearchField id="fclSearch" placeholder="{i18n>fclSearchPlaceholder}" liveChange=".onBuscarCarrito" width="100%"/>
+            </contentLeft>
+            <contentRight>
+              <Button id="fclBtnNuevo" icon="sap-icon://add" text="{i18n>fclBtnNuevo}" type="Transparent" press=".onNuevoMaterial"/>
+            </contentRight>
+          </Bar>
+        </subHeader>
+        <content>
+          <List id="fclListCarrito" items="{/carrito}" mode="None" noDataText="{i18n>fclNoDataCarrito}" itemPress=".onSeleccionarCarritoItem">
+            <items>
+              <CustomListItem id="fclCliCarrito" type="Active">
+                <HBox id="fclHboxCarritoItem" justifyContent="SpaceBetween" alignItems="Center" class="sapUiTinyMargin">
+                  <VBox id="fclVboxCarritoInfo">
+                    <Text id="fclTxtCarritoMaterial" text="{filaGrid/material}" class="sapMTextBold"/>
+                    <Text id="fclTxtCarritoResumen" text="{filaGrid/centro} · {header/tipoMaterial} · {filaGrid/descripcion}"/>
+                  </VBox>
+                  <HBox id="fclHboxCarritoAcciones" alignItems="Center">
+                    <ObjectStatus id="fclStatusCarritoItem" text="{estadoTexto}" icon="{estadoIconSrc}" state="{estadoState}" class="sapUiTinyMarginEnd"/>
+                    <Button id="fclBtnEliminarCarritoItem" icon="sap-icon://decline" type="Transparent" press=".onEliminarCarritoItem"/>
+                  </HBox>
+                </HBox>
+              </CustomListItem>
+            </items>
+          </List>
+        </content>
+        <footer>
+          <OverflowToolbar id="fclMasterFooter">
+            <ToolbarSpacer id="fclMasterFooterSpacer"/>
+            <Button id="fclBtnEnviarWorkflow" text="{i18n>btnEnviarWorkflow}" type="Accept" icon="sap-icon://workflow-tasks" enabled="{/ui/hayRegistrosEnCarrito}" press=".onEnviarWorkflow"/>
+          </OverflowToolbar>
+        </footer>
+      </Page>
+    </fcl:beginColumnPages>
+
+    <fcl:midColumnPages>
+      <Page id="fclDetailPage" showNavButton="false">
+        <customHeader>
+          <Bar id="fclDetailHeader">
+            <contentLeft>
+              <Title id="fclDetailTitleTxt" text="{path:'/', formatter:'.formatter.tituloDetalleFCL'}" level="H3"/>
+            </contentLeft>
+          </Bar>
+        </customHeader>
+        <content>
+          <MessageStrip
+            id="fclMsgStrip"
+            text="{/ui/messageStripText}"
+            type="{/ui/messageStripType}"
+            showIcon="true"
+            showCloseButton="false"
+            visible="{/ui/messageStripVisible}"
+            class="sapUiSmallMargin"/>
+
+          <f:SimpleForm id="fclFormGenerales" editable="true" layout="ResponsiveGridLayout" class="sapUiSmallMarginBeginEnd">
+            <core:Title id="fclTitleGenerales" text="{i18n>stepDatosGenerales}"/>
+
+            <Label id="fclLblModoSolicitud" text="{i18n>lblModoSolicitud}"/>
+            <RadioButtonGroup
+              id="fclRbgModoSolicitud"
+              columns="2"
+              selectedIndex="{= ${/header/modoSolicitud} === 'extension' ? 1 : 0 }"
+              editable="{= !${/ui/modoLectura} &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
+              select=".onModoSolicitudChange">
+              <RadioButton id="fclRbCreacion" text="{i18n>lblCreacion}"/>
+              <RadioButton id="fclRbExtension" text="{i18n>lblExtension}"/>
+            </RadioButtonGroup>
+
+            <Label id="fclLblMaterial" text="{i18n>lblMaterial}"/>
+            <Input
+              id="fclInpMaterial"
+              value="{/header/material}"
+              editable="{= !${/ui/modoLectura} &amp;&amp; (${/header/modoSolicitud} === 'extension' || ${/ui/rangoNumeracion} !== 'Interno') }"
+              placeholder="{= ${/ui/rangoNumeracion} === 'Interno' &amp;&amp; ${/header/modoSolicitud} === 'creacion' ? 'Se asigna automáticamente (rango interno)' : 'Número de material' }"
+              change=".onMaterialChange"/>
+
+            <Label id="fclLblTipoMaterial" text="{i18n>lblTipoMaterial}"/>
+            <ComboBox
+              id="fclCbTipoMaterial"
+              selectedKey="{/header/tipoMaterial}"
+              items="{valueHelp>/tiposMaterial}"
+              editable="{= !${/ui/modoLectura} &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
+              change=".onTipoMaterialChange">
+              <core:Item id="fclItemTipoMaterial" key="{valueHelp>key}" text="{valueHelp>text}"/>
+            </ComboBox>
+
+            <Label id="fclLblRamo" text="{i18n>lblRamo}"/>
+            <ComboBox
+              id="fclCbRamo"
+              selectedKey="{/header/ramo}"
+              items="{valueHelp>/ramos}"
+              editable="{= !${/ui/modoLectura} &amp;&amp; ${/header/estadoProceso} === 'Captura' }">
+              <core:Item id="fclItemRamo" key="{valueHelp>key}" text="{valueHelp>text}"/>
+            </ComboBox>
+
+            <Label id="fclLblTipoEntrada" text="{i18n>lblTipoEntrada}"/>
+            <ComboBox
+              id="fclCbTipoEntrada"
+              selectedKey="{/header/tipoEntrada}"
+              items="{tipoEntradaCatalogo>/rows}"
+              editable="{= !${/ui/modoLectura} &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
+              change=".onTipoEntradaChange"
+              width="60%">
+              <core:Item id="fclItemTipoEntrada" key="{tipoEntradaCatalogo>idTipoEntrada}" text="{tipoEntradaCatalogo>idTipoEntrada}"/>
+            </ComboBox>
+            <Text id="fclTxtDescTipoEntrada" text="{/header/tipoEntradaDesc}"/>
+
+            <Label id="fclLblFolio" text="{i18n>lblFolio}"/>
+            <Input id="fclInpFolio" value="{/header/folio}" editable="{= !${/ui/modoLectura} &amp;&amp; ${/header/estadoProceso} === 'Captura' }"/>
+
+            <Label id="fclLblCentro" text="{i18n>lblCentro}"/>
+            <ComboBox
+              id="fclCbCentro"
+              selectedKey="{/header/centro}"
+              items="{valueHelp>/centros}"
+              editable="{= !${/ui/modoLectura} &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
+              change=".onCentroChange">
+              <core:Item id="fclItemCentro" key="{valueHelp>key}" text="{valueHelp>text}"/>
+            </ComboBox>
+
+            <Label id="fclLblOrgVentas" text="{i18n>lblOrgVentas}"/>
+            <ComboBox
+              id="fclCbOrgVentas"
+              selectedKey="{/header/orgVentas}"
+              items="{valueHelp>/orgVentas}"
+              editable="{= !${/ui/modoLectura} &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
+              placeholder="Solo si aplica vista Ventas">
+              <core:Item id="fclItemOrgVentas" key="{valueHelp>key}" text="{valueHelp>text}"/>
+            </ComboBox>
+
+            <Label id="fclLblMaquilado" text="{i18n>lblMaterialMaquilado}"/>
+            <CheckBox id="fclCbMaquilado" selected="{/header/materialMaquilado}" enabled="{= !${/ui/modoLectura} &amp;&amp; ${/header/estadoProceso} === 'Captura' }"/>
+
+            <Label id="fclLblExportacion" text="{i18n>lblMaterialExportacion}"/>
+            <CheckBox id="fclCbExportacion" selected="{/header/materialExportacion}" enabled="{= !${/ui/modoLectura} &amp;&amp; ${/header/estadoProceso} === 'Captura' }"/>
+
+            <Label id="fclLblModoProceso" text="{i18n>lblModoProceso}"/>
+            <RadioButtonGroup
+              id="fclRbgModoProceso"
+              columns="2"
+              selectedIndex="{= ${/header/modoProceso} === 'M' ? 0 : 1 }"
+              editable="{= !${/ui/modoLectura} &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
+              select=".onModoProcesoChange">
+              <RadioButton id="fclRbFabricacion" text="{i18n>lblFabricacion}"/>
+              <RadioButton id="fclRbDistribucion" text="{i18n>lblDistribucion}"/>
+            </RadioButtonGroup>
+
+            <core:Title id="fclTitleBasicos" text="{i18n>stepDatosBasicos}"/>
+
+            <Label id="fclLblDenomEs" text="{i18n>lblDenominacionEs}"/>
+            <Input
+              id="fclInpDenomEs"
+              value="{/header/descripcionEs}"
+              editable="{= !${/ui/modoLectura} &amp;&amp; ${/header/modoSolicitud} !== 'extension' &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
+              change=".onDenominacionChange"/>
+
+            <Label id="fclLblUmBase" text="{i18n>lblUmBase}"/>
+            <ComboBox
+              id="fclCbUmBase"
+              selectedKey="{/header/umBase}"
+              items="{valueHelp>/unidades}"
+              editable="{= !${/ui/modoLectura} &amp;&amp; ${/header/modoSolicitud} !== 'extension' &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
+              change=".onDatosBasicosChange">
+              <core:Item id="fclItemUmBase" key="{valueHelp>key}" text="{valueHelp>text}"/>
+            </ComboBox>
+
+            <Label id="fclLblSector" text="{i18n>lblSector}"/>
+            <ComboBox
+              id="fclCbSector"
+              selectedKey="{/header/sector}"
+              items="{valueHelp>/sectores}"
+              editable="{= !${/ui/modoLectura} &amp;&amp; ${/header/modoSolicitud} !== 'extension' &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
+              change=".onDatosBasicosChange">
+              <core:Item id="fclItemSector" key="{valueHelp>key}" text="{valueHelp>text}"/>
+            </ComboBox>
+
+            <Label id="fclLblGrupoTipoPosGral" text="{i18n>lblGrupoTipoPosGral}"/>
+            <ComboBox
+              id="fclCbGrupoTipoPosGral"
+              selectedKey="{/header/grupoTipoPosGral}"
+              items="{valueHelp>/gruposTipoPosGral}"
+              editable="{= !${/ui/modoLectura} &amp;&amp; ${/header/modoSolicitud} !== 'extension' &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
+              change=".onDatosBasicosChange">
+              <core:Item id="fclItemGrupoTipoPosGral" key="{valueHelp>key}" text="{valueHelp>text}"/>
+            </ComboBox>
+
+            <Label id="fclLblGrupoArticulos" text="{i18n>lblGrupoArticulos}"/>
+            <ComboBox
+              id="fclCbGrupoArticulos"
+              selectedKey="{/header/grupoArticulos}"
+              items="{valueHelp>/gruposArticulos}"
+              editable="{= !${/ui/modoLectura} &amp;&amp; ${/header/modoSolicitud} !== 'extension' &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
+              change=".onDatosBasicosChange">
+              <core:Item id="fclItemGrupoArticulos" key="{valueHelp>key}" text="{valueHelp>text}"/>
+            </ComboBox>
+
+            <Label id="fclLblJerarquia" text="{i18n>lblJerarquiaProductos}"/>
+            <Input
+              id="fclInpJerarquia"
+              value="{/header/jerarquiaProductos}"
+              editable="{= !${/ui/modoLectura} &amp;&amp; ${/header/modoSolicitud} !== 'extension' &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
+              placeholder="{= ${/header/tipoMaterial} === 'FERT' ? 'Obligatorio para FERT' : '' }"
+              change=".onDatosBasicosChange"/>
+          </f:SimpleForm>
+
+          <IconTabBar id="fclTabsVistas" expandable="false" visible="{= ${/header/estadoProceso} !== 'Captura' }" class="sapUiResponsiveContentPadding">
+            <items>
+              <IconTabFilter id="fclTabVistasACrear" text="{i18n>tabVistasACrear}" key="crear" count="{= ${/vistasCrear}.length }">
+                <Table id="fclTblVistasACrear" items="{/vistasCrear}" mode="None" noDataText="No hay vistas configuradas (Objeto Custom 1) para este Centro/Tipo Material/Material de Exportación.">
+                  <columns>
+                    <Column id="fclColChkCrear" width="3rem"><Text id="fclTxtColChk" text=""/></Column>
+                    <Column id="fclColVista"><Text id="fclTxtColVista" text="{i18n>colVista}"/></Column>
+                    <Column id="fclColDescVista"><Text id="fclTxtColDescVista" text="{i18n>colDescripcionVista}"/></Column>
+                    <Column id="fclColUsuario"><Text id="fclTxtColUsuario" text="{i18n>colUsuario}"/></Column>
+                    <Column id="fclColSemCreada"><Text id="fclTxtColSemCreada" text="{i18n>colCreada}"/></Column>
+                    <Column id="fclColSemEnWF"><Text id="fclTxtColSemEnWF" text="{i18n>colEnWF}"/></Column>
+                  </columns>
+                  <items>
+                    <ColumnListItem id="fclCliVista">
+                      <cells>
+                        <CheckBox id="fclChkVistaCrear" selected="{crear}" enabled="{= !${creada} &amp;&amp; !${enWF} &amp;&amp; ${/header/estadoProceso} === 'Confirmado' }" select=".onVistaSelect"/>
+                        <Text id="fclTxtVista" text="{vista}"/>
+                        <Text id="fclTxtDescVista" text="{descripcionVista}"/>
+                        <Text id="fclTxtUsuario" text="{usuarioResponsable}"/>
+                        <core:Icon id="fclIconCreada" src="{path:'creada', formatter:'.formatter.semaforoIcon'}" color="{= ${creada} ? '#107E3E' : '#BB0000' }"/>
+                        <core:Icon id="fclIconEnWF" src="{path:'enWF', formatter:'.formatter.semaforoIcon'}" color="{= ${enWF} ? '#107E3E' : '#BB0000' }"/>
+                      </cells>
+                    </ColumnListItem>
+                  </items>
+                </Table>
+              </IconTabFilter>
+
+              <IconTabFilter id="fclTabVistasCreadas" text="{i18n>tabVistasCreadas}" key="creadas" count="{path:'/vistasCrear', formatter:'.formatter.contarCreadas'}">
+                <Table id="fclTblVistasCreadas" items="{path:'/vistasCrear', filters:[{path:'creada',operator:'EQ',value1:true}]}" mode="None" noDataText="Sin vistas creadas (MARC-PSTAT).">
+                  <columns>
+                    <Column id="fclColCreadasVista"><Text id="fclTxtColCreadasVista" text="{i18n>colVista}"/></Column>
+                    <Column id="fclColCreadasDesc"><Text id="fclTxtColCreadasDesc" text="{i18n>colDescripcionVista}"/></Column>
+                  </columns>
+                  <items>
+                    <ColumnListItem id="fclCliCreadas">
+                      <cells>
+                        <Text id="fclTxtCreadasVista" text="{vista}"/>
+                        <Text id="fclTxtCreadasDesc" text="{descripcionVista}"/>
+                      </cells>
+                    </ColumnListItem>
+                  </items>
+                </Table>
+              </IconTabFilter>
+
+              <IconTabFilter id="fclTabVistasEnWF" text="{i18n>tabVistasEnWF}" key="enwf" count="{path:'/vistasCrear', formatter:'.formatter.contarEnWF'}">
+                <Table id="fclTblVistasEnWF" items="{path:'/vistasCrear', filters:[{path:'enWF',operator:'EQ',value1:true}]}" mode="None" noDataText="Sin tareas pendientes (SWWWIHEAD/SWWUSERWI).">
+                  <columns>
+                    <Column id="fclColEnWFVista"><Text id="fclTxtColEnWFVista" text="{i18n>colVista}"/></Column>
+                    <Column id="fclColEnWFDesc"><Text id="fclTxtColEnWFDesc" text="{i18n>colDescripcionVista}"/></Column>
+                    <Column id="fclColEnWFWorkItem"><Text id="fclTxtColEnWFWorkItem" text="{i18n>colWorkItem}"/></Column>
+                  </columns>
+                  <items>
+                    <ColumnListItem id="fclCliEnWF">
+                      <cells>
+                        <Text id="fclTxtEnWFVista" text="{vista}"/>
+                        <Text id="fclTxtEnWFDesc" text="{descripcionVista}"/>
+                        <Text id="fclTxtEnWFWorkItem" text="{workItemId}"/>
+                      </cells>
+                    </ColumnListItem>
+                  </items>
+                </Table>
+              </IconTabFilter>
+
+              <IconTabFilter id="fclTabVistasVenta" text="{i18n>tabVistasDeVentas}" key="ventas" count="{= ${/vistasVenta}.length }">
+                <Table id="fclTblVistasVenta" items="{/vistasVenta}" mode="None" noDataText="Sin combinaciones de venta configuradas (simula consulta MVKE).">
+                  <columns>
+                    <Column id="fclColVentaOrg"><Text id="fclTxtColVentaOrg" text="{i18n>colOrgVenta}"/></Column>
+                    <Column id="fclColVentaCanal"><Text id="fclTxtColVentaCanal" text="{i18n>colCanalDist}"/></Column>
+                  </columns>
+                  <items>
+                    <ColumnListItem id="fclCliVenta">
+                      <cells>
+                        <Text id="fclTxtVentaOrg" text="{orgVentas}"/>
+                        <Text id="fclTxtVentaCanal" text="{canalDistribucion}"/>
+                      </cells>
+                    </ColumnListItem>
+                  </items>
+                </Table>
+              </IconTabFilter>
+
+              <IconTabFilter id="fclTabCanalesConf" text="{i18n>tabCanalesDistConf}" key="canales" count="{= ${/canalesConf}.length }">
+                <Table id="fclTblCanalesConf" items="{/canalesConf}" mode="None" noDataText="Sin canales configurados (Objeto Custom 2).">
+                  <columns>
+                    <Column id="fclColCanalConf"><Text id="fclTxtColCanalConf" text="{i18n>colCanalDist}"/></Column>
+                  </columns>
+                  <items>
+                    <ColumnListItem id="fclCliCanalConf">
+                      <cells>
+                        <Text id="fclTxtCanalConf" text="{canal}"/>
+                      </cells>
+                    </ColumnListItem>
+                  </items>
+                </Table>
+              </IconTabFilter>
+            </items>
+          </IconTabBar>
+        </content>
+        <footer>
+          <OverflowToolbar id="fclDetailFooter">
+            <ToolbarSpacer id="fclDetailFooterSpacer"/>
+            <Button
+              id="fclBtnConfirmarDatos"
+              text="{i18n>btnConfirmarDatos}"
+              type="Emphasized"
+              visible="{= !${/ui/modoLectura} &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
+              enabled="{/ui/formValidated}"
+              press=".onConfirmarDatos"/>
+            <Button
+              id="fclBtnModificarDatos"
+              text="{i18n>btnModificarDatos}"
+              type="Default"
+              visible="{= !${/ui/modoLectura} &amp;&amp; ${/header/estadoProceso} === 'Confirmado' }"
+              press=".onModificarDatos"/>
+            <Button
+              id="fclBtnAgregarListado"
+              text="{i18n>fclBtnAgregarListado}"
+              type="Emphasized"
+              visible="{= !${/ui/modoLectura} &amp;&amp; ${/header/estadoProceso} === 'Confirmado' }"
+              press=".onAgregarAlListado"/>
+          </OverflowToolbar>
+        </footer>
+      </Page>
+    </fcl:midColumnPages>
+
+  </fcl:FlexibleColumnLayout>
+</mvc:View>
