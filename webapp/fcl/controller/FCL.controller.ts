@@ -100,6 +100,12 @@ export default class FCL extends Controller {
     this.resetCapturaActiva();
   }
 
+  /** Trae de vuelta el panel Detail (dos columnas) tras haberlo cerrado con onCerrarDetalle. */
+  private mostrarPanelDetalle(): void {
+    this.getModel().setProperty("/ui/fclLayoutExpandido", false);
+    this.getFclLayout().setLayout(LayoutType.TwoColumnsMidExpanded);
+  }
+
   private materialExisteEnMaestro(sMaterial: string): boolean {
     return this.getConfigRows<MaterialMaestroConfig>("materialMaestro").some((m) => m.material === sMaterial);
   }
@@ -333,6 +339,7 @@ export default class FCL extends Controller {
   /** Botón "Nuevo" en la cabecera del Master (propuesta-2-split-app.md, Sección 3, Regla 2). */
   public onNuevoMaterial(_oEvent: Button$PressEvent): void {
     this.resetCapturaActiva();
+    this.mostrarPanelDetalle();
   }
 
   /** Clic en un ítem del Master — carga el detalle exacto en modo Solo Lectura (Regla 1). */
@@ -355,6 +362,7 @@ export default class FCL extends Controller {
     oModel.setProperty("/ui/modoLectura", true);
     oModel.setProperty("/ui/carritoSeleccionadoId", oItem.id);
     this.clearStrip();
+    this.mostrarPanelDetalle();
   }
 
   public onEliminarCarritoItem(oEvent: Button$PressEvent): void {
