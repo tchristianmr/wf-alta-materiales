@@ -12,6 +12,8 @@ import type { InputBase$ChangeEvent } from "sap/m/InputBase";
 import type { CheckBox$SelectEvent } from "sap/m/CheckBox";
 import type { SearchField$LiveChangeEvent } from "sap/m/SearchField";
 import type { ListBase$ItemPressEvent } from "sap/m/ListBase";
+import type FlexibleColumnLayout from "sap/f/FlexibleColumnLayout";
+import { LayoutType } from "sap/f/library";
 import formatter from "../../model/formatter";
 import VistasManager from "../../model/VistasManager";
 import { createCarritoModel, createMaterialHeaderDraft, generarSolicitudId } from "../../model/models";
@@ -77,6 +79,25 @@ export default class FCL extends Controller {
 
   public onVolver(): void {
     this.getRouter().navTo("fclLaunchpad");
+  }
+
+  private getFclLayout(): FlexibleColumnLayout {
+    return this.byId("fclLayout") as FlexibleColumnLayout;
+  }
+
+  /** Alterna el panel Detail entre ancho normal (dos columnas) y pantalla completa. */
+  public onExpandirColapsarDetalle(_oEvent: Button$PressEvent): void {
+    const oModel = this.getModel();
+    const bExpandido = !oModel.getProperty("/ui/fclLayoutExpandido");
+    oModel.setProperty("/ui/fclLayoutExpandido", bExpandido);
+    this.getFclLayout().setLayout(bExpandido ? LayoutType.MidColumnFullScreen : LayoutType.TwoColumnsMidExpanded);
+  }
+
+  /** Cierra el panel Detail y regresa a la vista de solo el Master (propuesta-2-split-app.md). */
+  public onCerrarDetalle(_oEvent: Button$PressEvent): void {
+    this.getModel().setProperty("/ui/fclLayoutExpandido", false);
+    this.getFclLayout().setLayout(LayoutType.OneColumn);
+    this.resetCapturaActiva();
   }
 
   private materialExisteEnMaestro(sMaterial: string): boolean {

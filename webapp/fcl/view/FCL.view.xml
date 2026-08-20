@@ -49,12 +49,26 @@
     </fcl:beginColumnPages>
 
     <fcl:midColumnPages>
-      <Page id="fclDetailPage" showNavButton="false">
+      <Page id="fclDetailPage" showNavButton="false" class="sapUiContentPadding">
         <customHeader>
           <Bar id="fclDetailHeader">
             <contentLeft>
               <Title id="fclDetailTitleTxt" text="{path:'/', formatter:'.formatter.tituloDetalleFCL'}" level="H3"/>
             </contentLeft>
+            <contentRight>
+              <Button
+                id="fclBtnExpandirDetalle"
+                icon="{= ${/ui/fclLayoutExpandido} ? 'sap-icon://exit-full-screen' : 'sap-icon://full-screen' }"
+                tooltip="{= ${/ui/fclLayoutExpandido} ? 'Salir de pantalla completa' : 'Expandir' }"
+                type="Transparent"
+                press=".onExpandirColapsarDetalle"/>
+              <Button
+                id="fclBtnCerrarDetalle"
+                icon="sap-icon://decline"
+                tooltip="Cerrar"
+                type="Transparent"
+                press=".onCerrarDetalle"/>
+            </contentRight>
           </Bar>
         </customHeader>
         <content>
@@ -65,9 +79,9 @@
             showIcon="true"
             showCloseButton="false"
             visible="{/ui/messageStripVisible}"
-            class="sapUiSmallMargin"/>
+            class="sapUiSmallMarginBottom"/>
 
-          <f:SimpleForm id="fclFormGenerales" editable="true" layout="ResponsiveGridLayout" class="sapUiSmallMarginBeginEnd">
+          <f:SimpleForm id="fclFormGenerales" editable="true" layout="ResponsiveGridLayout">
             <core:Title id="fclTitleGenerales" text="{i18n>stepDatosGenerales}"/>
 
             <Label id="fclLblModoSolicitud" text="{i18n>lblModoSolicitud}"/>

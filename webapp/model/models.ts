@@ -98,7 +98,8 @@ export function createCarritoModel(): JSONModel {
       rangoNumeracion: undefined,
       modoLectura: false,
       carritoSeleccionadoId: null,
-      hayRegistrosEnCarrito: false
+      hayRegistrosEnCarrito: false,
+      fclLayoutExpandido: false
     },
     vistasCrear: [],
     vistasVenta: [],
