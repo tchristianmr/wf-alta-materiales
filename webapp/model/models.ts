@@ -82,6 +82,32 @@ export function createSolicitudModel(sModoSolicitud: ModoSolicitud = "creacion")
 }
 
 /**
+ * Modelo local del Prototipo 3 (Dynamic Page, propuesta-3-dynamic-page.md). Igual que FCL, no
+ * hay pasos: un único `ui/formValidated` gobierna "Confirmar Datos". `ui/isFolioVisible`
+ * implementa la Regla de Negocio A del documento (Folio visible solo si Tipo de Entrada es
+ * DNP/EE/CA). El staging es el mismo `grid` (ResultGrid[]) de solo lectura del Wizard — no
+ * hace falta el `carrito` enriquecido de FCL porque aquí no se puede reabrir una fila agregada.
+ */
+export function createDynamicPageModel(): JSONModel {
+  return new JSONModel({
+    header: createMaterialHeaderDraft("creacion"),
+    ui: {
+      messageStripText: "",
+      messageStripType: "None",
+      messageStripVisible: false,
+      formValidated: false,
+      rangoNumeracion: undefined,
+      isFolioVisible: true,
+      hayRegistrosEnGrid: false
+    },
+    vistasCrear: [],
+    vistasVenta: [],
+    canalesConf: [],
+    grid: []
+  });
+}
+
+/**
  * Modelo local del Prototipo 2 (FCL / Split App, propuesta-2-split-app.md). A diferencia del
  * Wizard, aquí no hay pasos: un único `ui/formValidated` gobierna el botón "Confirmar Datos",
  * y `ui/modoLectura` + `ui/carritoSeleccionadoId` controlan si el panel Detail muestra la

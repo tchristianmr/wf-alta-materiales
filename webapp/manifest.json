@@ -126,6 +126,11 @@
           "name": "fcl",
           "pattern": "fcl/gestionar",
           "target": ["TargetFCL"]
+        },
+        {
+          "name": "dynamicPage",
+          "pattern": "dynamic-page",
+          "target": ["TargetDynamicPage"]
         }
       ],
       "targets": {
@@ -152,6 +157,11 @@
           "id": "FCL",
           "name": "FCL",
           "path": "com.alen.mm.wfaltamat.fcl.view"
+        },
+        "TargetDynamicPage": {
+          "id": "DynamicPage",
+          "name": "DynamicPage",
+          "path": "com.alen.mm.wfaltamat.dynamicpage.view"
         }
       }
     },

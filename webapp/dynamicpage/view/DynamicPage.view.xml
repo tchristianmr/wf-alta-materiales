@@ -1,0 +1,380 @@
+<mvc:View
+  controllerName="com.alen.mm.wfaltamat.dynamicpage.controller.DynamicPage"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  xmlns:f="sap.f"
+  xmlns:form="sap.ui.layout.form"
+  xmlns:core="sap.ui.core"
+  displayBlock="true"
+  height="100%">
+  <f:DynamicPage id="dpPage" headerExpanded="false" toggleHeaderOnTitleClick="false">
+    <f:title>
+      <f:DynamicPageTitle id="dpTitle">
+        <f:heading>
+          <Title id="dpHeading" text="{i18n>dpTitle}" level="H2"/>
+        </f:heading>
+        <f:content>
+          <SegmentedButton
+            id="dpSegModo"
+            selectedKey="{/header/modoSolicitud}"
+            enabled="{= ${/header/estadoProceso} === 'Captura' }"
+            selectionChange=".onModoSolicitudChange">
+            <items>
+              <SegmentedButtonItem id="dpSegCreacion" key="creacion" text="{i18n>lblCreacion}"/>
+              <SegmentedButtonItem id="dpSegExtension" key="extension" text="{i18n>lblExtension}"/>
+            </items>
+          </SegmentedButton>
+        </f:content>
+      </f:DynamicPageTitle>
+    </f:title>
+
+    <f:content>
+      <VBox id="dpContentRoot">
+        <MessageStrip
+          id="dpMsgStrip"
+          text="{/ui/messageStripText}"
+          type="{/ui/messageStripType}"
+          showIcon="true"
+          showCloseButton="false"
+          visible="{/ui/messageStripVisible}"
+          class="sapUiSmallMarginBottom"/>
+
+        <!-- Sección de Captura Activa -->
+        <form:SimpleForm id="dpFormGenerales" editable="true" layout="ResponsiveGridLayout">
+          <core:Title id="dpTitleGenerales" text="{i18n>stepDatosGenerales}"/>
+
+          <!-- Nota: el MD de Propuesta 3 no lista "Material" explícitamente en Sub-sección 1,
+               pero es indispensable (obligatorio en Extensión, obligatorio si rango Externo en
+               Creación) y sí aparece en el MD base (GAP_P2P_07) y en Wizard/FCL. Se incluye aquí
+               por consistencia funcional; señalado para confirmación del arquitecto. -->
+          <Label id="dpLblMaterial" text="{i18n>lblMaterial}"/>
+          <Input
+            id="dpInpMaterial"
+            value="{/header/material}"
+            editable="{= ${/header/estadoProceso} === 'Captura' &amp;&amp; (${/header/modoSolicitud} === 'extension' || ${/ui/rangoNumeracion} !== 'Interno') }"
+            placeholder="{= ${/ui/rangoNumeracion} === 'Interno' &amp;&amp; ${/header/modoSolicitud} === 'creacion' ? 'Se asigna automáticamente (rango interno)' : 'Número de material' }"
+            change=".onMaterialChange"/>
+
+          <Label id="dpLblTipoMaterial" text="{i18n>lblTipoMaterial}"/>
+          <ComboBox
+            id="dpCbTipoMaterial"
+            selectedKey="{/header/tipoMaterial}"
+            items="{valueHelp>/tiposMaterial}"
+            editable="{= ${/header/estadoProceso} === 'Captura' }"
+            change=".onTipoMaterialChange">
+            <core:Item id="dpItemTipoMaterial" key="{valueHelp>key}" text="{valueHelp>text}"/>
+          </ComboBox>
+
+          <Label id="dpLblCentro" text="{i18n>lblCentro}"/>
+          <ComboBox
+            id="dpCbCentro"
+            selectedKey="{/header/centro}"
+            items="{valueHelp>/centros}"
+            editable="{= ${/header/estadoProceso} === 'Captura' }"
+            change=".onCentroChange">
+            <core:Item id="dpItemCentro" key="{valueHelp>key}" text="{valueHelp>text}"/>
+          </ComboBox>
+
+          <Label id="dpLblRamo" text="{i18n>lblRamo}"/>
+          <ComboBox
+            id="dpCbRamo"
+            selectedKey="{/header/ramo}"
+            items="{valueHelp>/ramos}"
+            editable="{= ${/header/estadoProceso} === 'Captura' }">
+            <core:Item id="dpItemRamo" key="{valueHelp>key}" text="{valueHelp>text}"/>
+          </ComboBox>
+
+          <Label id="dpLblTipoEntrada" text="{i18n>lblTipoEntrada}"/>
+          <ComboBox
+            id="dpCbTipoEntrada"
+            selectedKey="{/header/tipoEntrada}"
+            items="{tipoEntradaCatalogo>/rows}"
+            editable="{= ${/header/estadoProceso} === 'Captura' }"
+            change=".onTipoEntradaChange"
+            width="60%">
+            <core:Item id="dpItemTipoEntrada" key="{tipoEntradaCatalogo>idTipoEntrada}" text="{tipoEntradaCatalogo>idTipoEntrada}"/>
+          </ComboBox>
+          <Text id="dpTxtDescTipoEntrada" text="{/header/tipoEntradaDesc}"/>
+
+          <!-- Regla de Negocio A (propuesta-3-dynamic-page.md): Folio visible solo si Tipo de
+               Entrada es DNP, EE o CA — calculado en onTipoEntradaChange sobre /ui/isFolioVisible. -->
+          <Label id="dpLblFolio" text="{i18n>lblFolio}" visible="{/ui/isFolioVisible}"/>
+          <Input
+            id="dpInpFolio"
+            value="{/header/folio}"
+            visible="{/ui/isFolioVisible}"
+            editable="{= ${/header/estadoProceso} === 'Captura' }"/>
+
+          <Label id="dpLblOrgVentas" text="{i18n>lblOrgVentas}"/>
+          <ComboBox
+            id="dpCbOrgVentas"
+            selectedKey="{/header/orgVentas}"
+            items="{valueHelp>/orgVentas}"
+            editable="{= ${/header/estadoProceso} === 'Captura' }"
+            placeholder="Solo si aplica vista Ventas">
+            <core:Item id="dpItemOrgVentas" key="{valueHelp>key}" text="{valueHelp>text}"/>
+          </ComboBox>
+
+          <Label id="dpLblMaquilado" text="{i18n>lblMaterialMaquilado}"/>
+          <CheckBox id="dpCbMaquilado" selected="{/header/materialMaquilado}" enabled="{= ${/header/estadoProceso} === 'Captura' }"/>
+
+          <Label id="dpLblExportacion" text="{i18n>lblMaterialExportacion}"/>
+          <CheckBox id="dpCbExportacion" selected="{/header/materialExportacion}" enabled="{= ${/header/estadoProceso} === 'Captura' }"/>
+
+          <Label id="dpLblModoProceso" text="{i18n>lblModoProceso}"/>
+          <RadioButtonGroup
+            id="dpRbgModoProceso"
+            columns="2"
+            selectedIndex="{= ${/header/modoProceso} === 'M' ? 0 : 1 }"
+            editable="{= ${/header/estadoProceso} === 'Captura' }"
+            select=".onModoProcesoChange">
+            <RadioButton id="dpRbFabricacion" text="{i18n>lblFabricacion}"/>
+            <RadioButton id="dpRbDistribucion" text="{i18n>lblDistribucion}"/>
+          </RadioButtonGroup>
+
+          <core:Title id="dpTitleBasicos" text="{i18n>stepDatosBasicos}"/>
+
+          <Label id="dpLblDenomEs" text="{i18n>lblDenominacionEs}"/>
+          <Input
+            id="dpInpDenomEs"
+            value="{/header/descripcionEs}"
+            editable="{= ${/header/modoSolicitud} !== 'extension' &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
+            change=".onDenominacionChange"/>
+
+          <Label id="dpLblUmBase" text="{i18n>lblUmBase}"/>
+          <ComboBox
+            id="dpCbUmBase"
+            selectedKey="{/header/umBase}"
+            items="{valueHelp>/unidades}"
+            editable="{= ${/header/modoSolicitud} !== 'extension' &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
+            change=".onDatosBasicosChange">
+            <core:Item id="dpItemUmBase" key="{valueHelp>key}" text="{valueHelp>text}"/>
+          </ComboBox>
+
+          <Label id="dpLblSector" text="{i18n>lblSector}"/>
+          <ComboBox
+            id="dpCbSector"
+            selectedKey="{/header/sector}"
+            items="{valueHelp>/sectores}"
+            editable="{= ${/header/modoSolicitud} !== 'extension' &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
+            change=".onDatosBasicosChange">
+            <core:Item id="dpItemSector" key="{valueHelp>key}" text="{valueHelp>text}"/>
+          </ComboBox>
+
+          <Label id="dpLblGrupoTipoPosGral" text="{i18n>lblGrupoTipoPosGral}"/>
+          <ComboBox
+            id="dpCbGrupoTipoPosGral"
+            selectedKey="{/header/grupoTipoPosGral}"
+            items="{valueHelp>/gruposTipoPosGral}"
+            editable="{= ${/header/modoSolicitud} !== 'extension' &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
+            change=".onDatosBasicosChange">
+            <core:Item id="dpItemGrupoTipoPosGral" key="{valueHelp>key}" text="{valueHelp>text}"/>
+          </ComboBox>
+
+          <Label id="dpLblGrupoArticulos" text="{i18n>lblGrupoArticulos}"/>
+          <ComboBox
+            id="dpCbGrupoArticulos"
+            selectedKey="{/header/grupoArticulos}"
+            items="{valueHelp>/gruposArticulos}"
+            editable="{= ${/header/modoSolicitud} !== 'extension' &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
+            change=".onDatosBasicosChange">
+            <core:Item id="dpItemGrupoArticulos" key="{valueHelp>key}" text="{valueHelp>text}"/>
+          </ComboBox>
+
+          <Label id="dpLblJerarquia" text="{i18n>lblJerarquiaProductos}"/>
+          <Input
+            id="dpInpJerarquia"
+            value="{/header/jerarquiaProductos}"
+            editable="{= ${/header/modoSolicitud} !== 'extension' &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
+            placeholder="{= ${/header/tipoMaterial} === 'FERT' ? 'Obligatorio para FERT' : '' }"
+            change=".onDatosBasicosChange"/>
+        </form:SimpleForm>
+
+        <!-- Sección de Pestañas Informativas — orden exacto de propuesta-3-dynamic-page.md
+             (distinto del Wizard/FCL: "Vistas a Crear" va al final, no primero). -->
+        <IconTabBar id="dpTabsVistas" expandable="false" visible="{= ${/header/estadoProceso} !== 'Captura' }" class="sapUiResponsiveContentPadding">
+          <items>
+            <IconTabFilter id="dpTabVistasCreadas" text="{i18n>tabVistasCreadas}" key="creadas" count="{path:'/vistasCrear', formatter:'.formatter.contarCreadas'}">
+              <Table id="dpTblVistasCreadas" items="{path:'/vistasCrear', filters:[{path:'creada',operator:'EQ',value1:true}]}" mode="None" noDataText="Sin vistas creadas (MARC-PSTAT).">
+                <columns>
+                  <Column id="dpColCreadasVista"><Text id="dpTxtColCreadasVista" text="{i18n>colVista}"/></Column>
+                  <Column id="dpColCreadasDesc"><Text id="dpTxtColCreadasDesc" text="{i18n>colDescripcionVista}"/></Column>
+                </columns>
+                <items>
+                  <ColumnListItem id="dpCliCreadas">
+                    <cells>
+                      <Text id="dpTxtCreadasVista" text="{vista}"/>
+                      <Text id="dpTxtCreadasDesc" text="{descripcionVista}"/>
+                    </cells>
+                  </ColumnListItem>
+                </items>
+              </Table>
+            </IconTabFilter>
+
+            <IconTabFilter id="dpTabVistasEnWF" text="{i18n>tabVistasEnWF}" key="enwf" count="{path:'/vistasCrear', formatter:'.formatter.contarEnWF'}">
+              <Table id="dpTblVistasEnWF" items="{path:'/vistasCrear', filters:[{path:'enWF',operator:'EQ',value1:true}]}" mode="None" noDataText="Sin tareas pendientes (SWWWIHEAD/SWWUSERWI).">
+                <columns>
+                  <Column id="dpColEnWFVista"><Text id="dpTxtColEnWFVista" text="{i18n>colVista}"/></Column>
+                  <Column id="dpColEnWFDesc"><Text id="dpTxtColEnWFDesc" text="{i18n>colDescripcionVista}"/></Column>
+                  <Column id="dpColEnWFWorkItem"><Text id="dpTxtColEnWFWorkItem" text="{i18n>colWorkItem}"/></Column>
+                </columns>
+                <items>
+                  <ColumnListItem id="dpCliEnWF">
+                    <cells>
+                      <Text id="dpTxtEnWFVista" text="{vista}"/>
+                      <Text id="dpTxtEnWFDesc" text="{descripcionVista}"/>
+                      <Text id="dpTxtEnWFWorkItem" text="{workItemId}"/>
+                    </cells>
+                  </ColumnListItem>
+                </items>
+              </Table>
+            </IconTabFilter>
+
+            <IconTabFilter id="dpTabVistasVenta" text="{i18n>tabVistasDeVentas}" key="ventas" count="{= ${/vistasVenta}.length }">
+              <Table id="dpTblVistasVenta" items="{/vistasVenta}" mode="None" noDataText="Sin combinaciones de venta configuradas (simula consulta MVKE).">
+                <columns>
+                  <Column id="dpColVentaOrg"><Text id="dpTxtColVentaOrg" text="{i18n>colOrgVenta}"/></Column>
+                  <Column id="dpColVentaCanal"><Text id="dpTxtColVentaCanal" text="{i18n>colCanalDist}"/></Column>
+                </columns>
+                <items>
+                  <ColumnListItem id="dpCliVenta">
+                    <cells>
+                      <Text id="dpTxtVentaOrg" text="{orgVentas}"/>
+                      <Text id="dpTxtVentaCanal" text="{canalDistribucion}"/>
+                    </cells>
+                  </ColumnListItem>
+                </items>
+              </Table>
+            </IconTabFilter>
+
+            <IconTabFilter id="dpTabCanalesConf" text="{i18n>tabCanalesDistConf}" key="canales" count="{= ${/canalesConf}.length }">
+              <Table id="dpTblCanalesConf" items="{/canalesConf}" mode="None" noDataText="Sin canales configurados (Objeto Custom 2).">
+                <columns>
+                  <Column id="dpColCanalConf"><Text id="dpTxtColCanalConf" text="{i18n>colCanalDist}"/></Column>
+                </columns>
+                <items>
+                  <ColumnListItem id="dpCliCanalConf">
+                    <cells>
+                      <Text id="dpTxtCanalConf" text="{canal}"/>
+                    </cells>
+                  </ColumnListItem>
+                </items>
+              </Table>
+            </IconTabFilter>
+
+            <IconTabFilter id="dpTabVistasACrear" text="{i18n>tabVistasACrear}" key="crear" count="{= ${/vistasCrear}.length }">
+              <Table id="dpTblVistasACrear" items="{/vistasCrear}" mode="None" noDataText="No hay vistas configuradas (Objeto Custom 1) para este Centro/Tipo Material/Material de Exportación.">
+                <columns>
+                  <Column id="dpColChkCrear" width="3rem"><Text id="dpTxtColChk" text=""/></Column>
+                  <Column id="dpColVista"><Text id="dpTxtColVista" text="{i18n>colVista}"/></Column>
+                  <Column id="dpColDescVista"><Text id="dpTxtColDescVista" text="{i18n>colDescripcionVista}"/></Column>
+                  <Column id="dpColUsuario"><Text id="dpTxtColUsuario" text="{i18n>colUsuario}"/></Column>
+                  <Column id="dpColSemCreada"><Text id="dpTxtColSemCreada" text="{i18n>colCreada}"/></Column>
+                  <Column id="dpColSemEnWF"><Text id="dpTxtColSemEnWF" text="{i18n>colEnWF}"/></Column>
+                </columns>
+                <items>
+                  <ColumnListItem id="dpCliVista">
+                    <cells>
+                      <CheckBox id="dpChkVistaCrear" selected="{crear}" enabled="{= !${creada} &amp;&amp; !${enWF} &amp;&amp; ${/header/estadoProceso} === 'Confirmado' }" select=".onVistaSelect"/>
+                      <Text id="dpTxtVista" text="{vista}"/>
+                      <Text id="dpTxtDescVista" text="{descripcionVista}"/>
+                      <Text id="dpTxtUsuario" text="{usuarioResponsable}"/>
+                      <core:Icon id="dpIconCreada" src="{path:'creada', formatter:'.formatter.semaforoIcon'}" color="{= ${creada} ? '#107E3E' : '#BB0000' }"/>
+                      <core:Icon id="dpIconEnWF" src="{path:'enWF', formatter:'.formatter.semaforoIcon'}" color="{= ${enWF} ? '#107E3E' : '#BB0000' }"/>
+                    </cells>
+                  </ColumnListItem>
+                </items>
+              </Table>
+            </IconTabFilter>
+          </items>
+        </IconTabBar>
+
+        <!-- Barra de Acciones Intermedia -->
+        <OverflowToolbar id="dpToolbarIntermedia" class="sapUiSmallMarginTop sapUiSmallMarginBottom">
+          <ToolbarSpacer id="dpToolbarIntermediaSpacer"/>
+          <Button
+            id="dpBtnLimpiar"
+            text="{i18n>btnLimpiar}"
+            type="Transparent"
+            visible="{= ${/header/estadoProceso} === 'Captura' }"
+            press=".onLimpiar"/>
+          <Button
+            id="dpBtnConfirmarDatos"
+            text="{i18n>btnConfirmarDatos}"
+            type="Emphasized"
+            visible="{= ${/header/estadoProceso} === 'Captura' }"
+            enabled="{/ui/formValidated}"
+            press=".onConfirmarDatos"/>
+          <Button
+            id="dpBtnModificarDatos"
+            text="{i18n>btnModificarDatos}"
+            type="Default"
+            visible="{= ${/header/estadoProceso} === 'Confirmado' }"
+            press=".onModificarDatos"/>
+          <Button
+            id="dpBtnAgregarListado"
+            text="{i18n>fclBtnAgregarListado}"
+            type="Emphasized"
+            visible="{= ${/header/estadoProceso} === 'Confirmado' }"
+            press=".onAgregarAlListado"/>
+        </OverflowToolbar>
+
+        <!-- Sección de Staging Grid -->
+        <Panel id="dpPanelGrid" headerText="{i18n>titleGrid}" expandable="false">
+          <Table
+            id="dpGridSolicitudes"
+            items="{/grid}"
+            mode="None"
+            noDataText="Aún no ha agregado ningún registro.">
+            <columns>
+              <Column id="dpColGridMaterial" minScreenWidth="Tablet" demandPopin="true"><Text id="dpTxtGridMaterial" text="{i18n>colMaterial}"/></Column>
+              <Column id="dpColGridDesc" minScreenWidth="Tablet" demandPopin="true"><Text id="dpTxtGridDesc" text="{i18n>colDescripcion}"/></Column>
+              <Column id="dpColGridCentro"><Text id="dpTxtGridCentro" text="{i18n>colCentro}"/></Column>
+              <Column id="dpColGridMatMaq" hAlign="Center" minScreenWidth="Desktop" demandPopin="true"><Text id="dpTxtGridMatMaq" text="{i18n>colMatMaq}"/></Column>
+              <Column id="dpColGridCLt" hAlign="Center" minScreenWidth="Desktop" demandPopin="true"><Text id="dpTxtGridCLt" text="{i18n>colCLt}"/></Column>
+              <Column id="dpColGridTipoFabDis" minScreenWidth="Desktop" demandPopin="true"><Text id="dpTxtGridTipoFabDis" text="{i18n>colTipoFabDis}"/></Column>
+              <Column id="dpColGridRamo" minScreenWidth="Desktop" demandPopin="true"><Text id="dpTxtGridRamo" text="{i18n>colRamo}"/></Column>
+              <Column id="dpColGridUm" minScreenWidth="Desktop" demandPopin="true"><Text id="dpTxtGridUm" text="{i18n>colUnidMed}"/></Column>
+              <Column id="dpColGridSector" minScreenWidth="Desktop" demandPopin="true"><Text id="dpTxtGridSector" text="{i18n>colSector}"/></Column>
+              <Column id="dpColGridGrTpPosGral" minScreenWidth="Desktop" demandPopin="true"><Text id="dpTxtGridGrTpPosGral" text="{i18n>colGrTpPosGral}"/></Column>
+              <Column id="dpColGridGpoArt" minScreenWidth="Desktop" demandPopin="true"><Text id="dpTxtGridGpoArt" text="{i18n>colGpoArt}"/></Column>
+              <Column id="dpColGridOrgVentas" minScreenWidth="Desktop" demandPopin="true"><Text id="dpTxtGridOrgVentas" text="{i18n>colOrgVentasGrid}"/></Column>
+              <Column id="dpColGridJquiaProd" minScreenWidth="Desktop" demandPopin="true"><Text id="dpTxtGridJquiaProd" text="{i18n>colJquiaProd}"/></Column>
+              <Column id="dpColGridVistas"><Text id="dpTxtGridVistas" text="{i18n>colVistasACrear}"/></Column>
+              <Column id="dpColGridAcciones" hAlign="Center"><Text id="dpTxtGridAcciones" text=""/></Column>
+            </columns>
+            <items>
+              <ColumnListItem id="dpCliGrid">
+                <cells>
+                  <Text id="dpTxtCellMaterial" text="{material}"/>
+                  <Text id="dpTxtCellDesc" text="{descripcion}"/>
+                  <Text id="dpTxtCellCentro" text="{centro}"/>
+                  <core:Icon id="dpIconCellMatMaq" src="{= ${materialMaquilado} ? 'sap-icon://accept' : 'sap-icon://less'}"/>
+                  <core:Icon id="dpIconCellCLt" src="{= ${conListaMateriales} ? 'sap-icon://accept' : 'sap-icon://less'}"/>
+                  <Text id="dpTxtCellTipoFabDis" text="{path:'modoProceso', formatter:'.formatter.modoProcesoTexto'}"/>
+                  <Text id="dpTxtCellRamo" text="{ramo}"/>
+                  <Text id="dpTxtCellUm" text="{umBase}"/>
+                  <Text id="dpTxtCellSector" text="{sector}"/>
+                  <Text id="dpTxtCellGrTpPosGral" text="{grupoTipoPosGral}"/>
+                  <Text id="dpTxtCellGpoArt" text="{grupoArticulos}"/>
+                  <Text id="dpTxtCellOrgVentas" text="{orgVentas}"/>
+                  <Text id="dpTxtCellJquiaProd" text="{jerarquiaProductos}"/>
+                  <Text id="dpTxtCellVistas" text="{vistasACrear}"/>
+                  <Button id="dpBtnEliminarFila" icon="sap-icon://delete" type="Transparent" press=".onEliminarGridRow"/>
+                </cells>
+              </ColumnListItem>
+            </items>
+          </Table>
+        </Panel>
+      </VBox>
+    </f:content>
+
+    <f:footer>
+      <OverflowToolbar id="dpFooter">
+        <ToolbarSpacer id="dpFooterSpacer"/>
+        <Button id="dpBtnCancelar" text="{i18n>dpBtnCancelar}" type="Reject" press=".onCancelar"/>
+        <Button id="dpBtnEnviarWorkflow" text="{i18n>btnEnviarWorkflow}" type="Accept" icon="sap-icon://workflow-tasks" enabled="{/ui/hayRegistrosEnGrid}" press=".onEnviarWorkflow"/>
+      </OverflowToolbar>
+    </f:footer>
+  </f:DynamicPage>
+</mvc:View>

@@ -23,6 +23,14 @@
           frameType="TwoByOne"
           headerImage="sap-icon://columns"
           press=".onAbrirPrototipo2"/>
+        <GenericTile
+          id="lpTileProto3"
+          class="sapUiTinyMarginEnd sapUiTinyMarginBottom"
+          header="{i18n>lpTileProto3}"
+          subheader="{i18n>lpTileProto3Sub}"
+          frameType="TwoByOne"
+          headerImage="sap-icon://list"
+          press=".onAbrirPrototipo3"/>
       </HBox>
     </content>
   </Page>

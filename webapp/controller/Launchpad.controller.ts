@@ -22,4 +22,10 @@ export default class Launchpad extends Controller {
   public onAbrirPrototipo2(_oEvent: GenericTile$PressEvent | Button$PressEvent): void {
     this.getRouter().navTo("fclLaunchpad");
   }
+
+  /** A diferencia de Prototipo 1/2, el 3 no tiene sub-launchpad propio: el SegmentedButton
+   * de Creación/Extensión ya vive dentro de la Dynamic Page (propuesta-3-dynamic-page.md). */
+  public onAbrirPrototipo3(_oEvent: GenericTile$PressEvent | Button$PressEvent): void {
+    this.getRouter().navTo("dynamicPage");
+  }
 }
