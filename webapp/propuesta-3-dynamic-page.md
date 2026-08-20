@@ -19,12 +19,12 @@ El layout se compone de las siguientes secciones estructuradas verticalmente den
         *   *Control del Folio (Condicional):* Campo de entrada `sap.m.Input` (tipo CHAR-10) cuya visibilidad (`visible="{localUI>/isFolioVisible}"`) es dinámica según las reglas de negocio descritas en la Sección 3.
     *   **Sub-sección 2 (Datos Básicos):** Denominación, Unidad de Medida Base, Sector, Grupo de Tipos de Posición General, Grupo de Artículos y Jerarquía de Productos.
 3.  **Sección de Pestañas Informativas (`sap.m.IconTabBar`):**
-    *   Contiene las 4 pestañas de validación técnica que se cargan dinámicamente al confirmar los datos del material activo:
-        *   **Pestaña 1 (Vistas creadas):** Estado de actualización (`MARC-PSTAT`).
-        *   **Pestaña 2 (Vistas en WF):** Tareas pendientes de diálogo asociadas.
-        *   **Pestaña 3 (Vistas de Ventas):** Combinaciones existentes en `MVKE`.
-        *   **Pestaña 4 (Canales Conf.):** Configuración del *Objeto Custom 2*.
-        *   **Pestaña 5 (Vistas a Crear):** Checkboxes de selección de vistas, con semáforos integrados de *Vista Creada* y *Vista en WF* basados en las tablas de configuración (*Objeto Custom 1*).
+    *   Contiene las 5 pestañas de validación técnica que se cargan dinámicamente al confirmar los datos del material activo. **Orden actualizado tras prueba de usuario** (la versión original de este documento ponía "Vistas a Crear" al final; se movió a la primera posición porque es la única pestaña accionable — las demás son de solo lectura/informativas — y dejarla al final generaba el error confuso "Seleccione al menos una vista" cuando el usuario intentaba "Agregar al Listado" sin haber navegado hasta ella):
+        *   **Pestaña 1 (Vistas a Crear):** Checkboxes de selección de vistas, con semáforos integrados de *Vista Creada* y *Vista en WF* basados en las tablas de configuración (*Objeto Custom 1*). Es la pestaña seleccionada por defecto al confirmar datos.
+        *   **Pestaña 2 (Vistas creadas):** Estado de actualización (`MARC-PSTAT`).
+        *   **Pestaña 3 (Vistas en WF):** Tareas pendientes de diálogo asociadas.
+        *   **Pestaña 4 (Vistas de Ventas):** Combinaciones existentes en `MVKE`.
+        *   **Pestaña 5 (Canales Conf.):** Configuración del *Objeto Custom 2*.
 4.  **Barra de Acciones Intermedia (`sap.m.OverflowToolbar`):**
     *   Contiene el botón principal **\"Agregar al Listado\"** (`type: Emphasized`).
 5.  **Sección de Staging Grid (`sap.m.Table` / Grid de Solicitudes):**

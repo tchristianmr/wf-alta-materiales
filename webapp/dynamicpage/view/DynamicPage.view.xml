@@ -190,10 +190,37 @@
             change=".onDatosBasicosChange"/>
         </form:SimpleForm>
 
-        <!-- Sección de Pestañas Informativas — orden exacto de propuesta-3-dynamic-page.md
-             (distinto del Wizard/FCL: "Vistas a Crear" va al final, no primero). -->
+        <!-- Sección de Pestañas Informativas — orden ajustado tras prueba de usuario: "Vistas a
+             Crear" va primero (es la pestaña accionable, donde se marcan checkboxes antes de
+             "Agregar al Listado"); las demás son informativas de solo lectura. Documentado en
+             propuesta-3-dynamic-page.md como refinamiento sobre el orden original del documento. -->
         <IconTabBar id="dpTabsVistas" expandable="false" visible="{= ${/header/estadoProceso} !== 'Captura' }" class="sapUiResponsiveContentPadding">
           <items>
+            <IconTabFilter id="dpTabVistasACrear" text="{i18n>tabVistasACrear}" key="crear" count="{= ${/vistasCrear}.length }">
+              <Table id="dpTblVistasACrear" items="{/vistasCrear}" mode="None" noDataText="No hay vistas configuradas (Objeto Custom 1) para este Centro/Tipo Material/Material de Exportación.">
+                <columns>
+                  <Column id="dpColChkCrear" width="3rem"><Text id="dpTxtColChk" text=""/></Column>
+                  <Column id="dpColVista"><Text id="dpTxtColVista" text="{i18n>colVista}"/></Column>
+                  <Column id="dpColDescVista"><Text id="dpTxtColDescVista" text="{i18n>colDescripcionVista}"/></Column>
+                  <Column id="dpColUsuario"><Text id="dpTxtColUsuario" text="{i18n>colUsuario}"/></Column>
+                  <Column id="dpColSemCreada"><Text id="dpTxtColSemCreada" text="{i18n>colCreada}"/></Column>
+                  <Column id="dpColSemEnWF"><Text id="dpTxtColSemEnWF" text="{i18n>colEnWF}"/></Column>
+                </columns>
+                <items>
+                  <ColumnListItem id="dpCliVista">
+                    <cells>
+                      <CheckBox id="dpChkVistaCrear" selected="{crear}" enabled="{= !${creada} &amp;&amp; !${enWF} &amp;&amp; ${/header/estadoProceso} === 'Confirmado' }" select=".onVistaSelect"/>
+                      <Text id="dpTxtVista" text="{vista}"/>
+                      <Text id="dpTxtDescVista" text="{descripcionVista}"/>
+                      <Text id="dpTxtUsuario" text="{usuarioResponsable}"/>
+                      <core:Icon id="dpIconCreada" src="{path:'creada', formatter:'.formatter.semaforoIcon'}" color="{= ${creada} ? '#107E3E' : '#BB0000' }"/>
+                      <core:Icon id="dpIconEnWF" src="{path:'enWF', formatter:'.formatter.semaforoIcon'}" color="{= ${enWF} ? '#107E3E' : '#BB0000' }"/>
+                    </cells>
+                  </ColumnListItem>
+                </items>
+              </Table>
+            </IconTabFilter>
+
             <IconTabFilter id="dpTabVistasCreadas" text="{i18n>tabVistasCreadas}" key="creadas" count="{path:'/vistasCrear', formatter:'.formatter.contarCreadas'}">
               <Table id="dpTblVistasCreadas" items="{path:'/vistasCrear', filters:[{path:'creada',operator:'EQ',value1:true}]}" mode="None" noDataText="Sin vistas creadas (MARC-PSTAT).">
                 <columns>
@@ -256,31 +283,6 @@
                   <ColumnListItem id="dpCliCanalConf">
                     <cells>
                       <Text id="dpTxtCanalConf" text="{canal}"/>
-                    </cells>
-                  </ColumnListItem>
-                </items>
-              </Table>
-            </IconTabFilter>
-
-            <IconTabFilter id="dpTabVistasACrear" text="{i18n>tabVistasACrear}" key="crear" count="{= ${/vistasCrear}.length }">
-              <Table id="dpTblVistasACrear" items="{/vistasCrear}" mode="None" noDataText="No hay vistas configuradas (Objeto Custom 1) para este Centro/Tipo Material/Material de Exportación.">
-                <columns>
-                  <Column id="dpColChkCrear" width="3rem"><Text id="dpTxtColChk" text=""/></Column>
-                  <Column id="dpColVista"><Text id="dpTxtColVista" text="{i18n>colVista}"/></Column>
-                  <Column id="dpColDescVista"><Text id="dpTxtColDescVista" text="{i18n>colDescripcionVista}"/></Column>
-                  <Column id="dpColUsuario"><Text id="dpTxtColUsuario" text="{i18n>colUsuario}"/></Column>
-                  <Column id="dpColSemCreada"><Text id="dpTxtColSemCreada" text="{i18n>colCreada}"/></Column>
-                  <Column id="dpColSemEnWF"><Text id="dpTxtColSemEnWF" text="{i18n>colEnWF}"/></Column>
-                </columns>
-                <items>
-                  <ColumnListItem id="dpCliVista">
-                    <cells>
-                      <CheckBox id="dpChkVistaCrear" selected="{crear}" enabled="{= !${creada} &amp;&amp; !${enWF} &amp;&amp; ${/header/estadoProceso} === 'Confirmado' }" select=".onVistaSelect"/>
-                      <Text id="dpTxtVista" text="{vista}"/>
-                      <Text id="dpTxtDescVista" text="{descripcionVista}"/>
-                      <Text id="dpTxtUsuario" text="{usuarioResponsable}"/>
-                      <core:Icon id="dpIconCreada" src="{path:'creada', formatter:'.formatter.semaforoIcon'}" color="{= ${creada} ? '#107E3E' : '#BB0000' }"/>
-                      <core:Icon id="dpIconEnWF" src="{path:'enWF', formatter:'.formatter.semaforoIcon'}" color="{= ${enWF} ? '#107E3E' : '#BB0000' }"/>
                     </cells>
                   </ColumnListItem>
                 </items>
