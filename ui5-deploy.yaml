@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=https://sap.github.io/ui5-tooling/schema/ui5.yaml.json
+
+specVersion: "4.0"
+metadata:
+  name: com.alen.mm.wfaltamat
+type: application
+builder:
+  resources:
+    excludes:
+      - /test/**
+      - /docs/**
+      - /localService/metadata.xml
+  customTasks:
+    - name: ui5-tooling-transpile-task
+      afterTask: replaceVersion
+      configuration:
+        debug: true
+        transformModulesToUI5:
+          overridesToOverride: true
+    - name: deploy-to-abap
+      afterTask: generateCachebusterInfo
+      configuration:
+        target:
+          destination: s4dev
+          url: http://s4dev:4300
+          client: '100'
+        app:
+          name: ZWFALTAMAT
+          description: Workflow de Alta de Materiales
+          package: ZFIORIS4
+          transport: S4DK905283
+        exclude:
+          - /test/
+          - /localService/metadata.xml

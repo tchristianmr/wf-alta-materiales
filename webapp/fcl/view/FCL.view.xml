@@ -237,20 +237,20 @@
               <IconTabFilter id="fclTabVistasACrear" text="{i18n>tabVistasACrear}" key="crear" count="{= ${/vistasCrear}.length }">
                 <Table id="fclTblVistasACrear" items="{/vistasCrear}" mode="None" noDataText="No hay vistas configuradas (Objeto Custom 1) para este Centro/Tipo Material/Material de Exportación.">
                   <columns>
-                    <Column id="fclColChkCrear" width="3rem"><Text id="fclTxtColChk" text=""/></Column>
                     <Column id="fclColVista"><Text id="fclTxtColVista" text="{i18n>colVista}"/></Column>
                     <Column id="fclColDescVista"><Text id="fclTxtColDescVista" text="{i18n>colDescripcionVista}"/></Column>
                     <Column id="fclColUsuario"><Text id="fclTxtColUsuario" text="{i18n>colUsuario}"/></Column>
-                    <Column id="fclColSemCreada"><Text id="fclTxtColSemCreada" text="{i18n>colCreada}"/></Column>
-                    <Column id="fclColSemEnWF"><Text id="fclTxtColSemEnWF" text="{i18n>colEnWF}"/></Column>
+                    <Column id="fclColChkCrear" hAlign="Center" width="4rem"><Text id="fclTxtColChk" text="{i18n>colCrear}"/></Column>
+                    <Column id="fclColSemCreada" hAlign="Center"><Text id="fclTxtColSemCreada" text="{i18n>colCreada}"/></Column>
+                    <Column id="fclColSemEnWF" hAlign="Center"><Text id="fclTxtColSemEnWF" text="{i18n>colEnWF}"/></Column>
                   </columns>
                   <items>
                     <ColumnListItem id="fclCliVista">
                       <cells>
-                        <CheckBox id="fclChkVistaCrear" selected="{crear}" enabled="{= !${creada} &amp;&amp; !${enWF} &amp;&amp; ${/header/estadoProceso} === 'Confirmado' }" select=".onVistaSelect"/>
                         <Text id="fclTxtVista" text="{vista}"/>
                         <Text id="fclTxtDescVista" text="{descripcionVista}"/>
                         <Text id="fclTxtUsuario" text="{usuarioResponsable}"/>
+                        <CheckBox id="fclChkVistaCrear" selected="{crear}" enabled="{= !${creada} &amp;&amp; !${enWF} &amp;&amp; ${/header/estadoProceso} === 'Confirmado' }" select=".onVistaSelect"/>
                         <core:Icon id="fclIconCreada" src="{path:'creada', formatter:'.formatter.semaforoIcon'}" color="{= ${creada} ? '#107E3E' : '#BB0000' }"/>
                         <core:Icon id="fclIconEnWF" src="{path:'enWF', formatter:'.formatter.semaforoIcon'}" color="{= ${enWF} ? '#107E3E' : '#BB0000' }"/>
                       </cells>
@@ -279,16 +279,16 @@
               <IconTabFilter id="fclTabVistasEnWF" text="{i18n>tabVistasEnWF}" key="enwf" count="{path:'/vistasCrear', formatter:'.formatter.contarEnWF'}">
                 <Table id="fclTblVistasEnWF" items="{path:'/vistasCrear', filters:[{path:'enWF',operator:'EQ',value1:true}]}" mode="None" noDataText="Sin tareas pendientes (SWWWIHEAD/SWWUSERWI).">
                   <columns>
-                    <Column id="fclColEnWFVista"><Text id="fclTxtColEnWFVista" text="{i18n>colVista}"/></Column>
-                    <Column id="fclColEnWFDesc"><Text id="fclTxtColEnWFDesc" text="{i18n>colDescripcionVista}"/></Column>
-                    <Column id="fclColEnWFWorkItem"><Text id="fclTxtColEnWFWorkItem" text="{i18n>colWorkItem}"/></Column>
+                    <Column id="fclColEnWFTitulo"><Text id="fclTxtColEnWFTitulo" text="{i18n>colTitulo}"/></Column>
+                    <Column id="fclColEnWFFecha"><Text id="fclTxtColEnWFFecha" text="{i18n>colFechaCreacion}"/></Column>
+                    <Column id="fclColEnWFUsuario"><Text id="fclTxtColEnWFUsuario" text="{i18n>colUsuario}"/></Column>
                   </columns>
                   <items>
                     <ColumnListItem id="fclCliEnWF">
                       <cells>
-                        <Text id="fclTxtEnWFVista" text="{vista}"/>
-                        <Text id="fclTxtEnWFDesc" text="{descripcionVista}"/>
-                        <Text id="fclTxtEnWFWorkItem" text="{workItemId}"/>
+                        <Text id="fclTxtEnWFTitulo" text="{wiTitulo}"/>
+                        <Text id="fclTxtEnWFFecha" text="{wiFechaCreacion}"/>
+                        <Text id="fclTxtEnWFUsuario" text="{wiUsuario}"/>
                       </cells>
                     </ColumnListItem>
                   </items>
@@ -296,14 +296,16 @@
               </IconTabFilter>
 
               <IconTabFilter id="fclTabVistasVenta" text="{i18n>tabVistasDeVentas}" key="ventas" count="{= ${/vistasVenta}.length }">
-                <Table id="fclTblVistasVenta" items="{/vistasVenta}" mode="None" noDataText="Sin combinaciones de venta configuradas (simula consulta MVKE).">
+                <Table id="fclTblVistasVenta" items="{/vistasVenta}" mode="None" noDataText="Sin vistas de venta existentes (simula consulta MVKE).">
                   <columns>
+                    <Column id="fclColVentaMaterial"><Text id="fclTxtColVentaMaterial" text="{i18n>colMaterial}"/></Column>
                     <Column id="fclColVentaOrg"><Text id="fclTxtColVentaOrg" text="{i18n>colOrgVenta}"/></Column>
                     <Column id="fclColVentaCanal"><Text id="fclTxtColVentaCanal" text="{i18n>colCanalDist}"/></Column>
                   </columns>
                   <items>
                     <ColumnListItem id="fclCliVenta">
                       <cells>
+                        <Text id="fclTxtVentaMaterial" text="{material}"/>
                         <Text id="fclTxtVentaOrg" text="{orgVentas}"/>
                         <Text id="fclTxtVentaCanal" text="{canalDistribucion}"/>
                       </cells>
@@ -315,12 +317,14 @@
               <IconTabFilter id="fclTabCanalesConf" text="{i18n>tabCanalesDistConf}" key="canales" count="{= ${/canalesConf}.length }">
                 <Table id="fclTblCanalesConf" items="{/canalesConf}" mode="None" noDataText="Sin canales configurados (Objeto Custom 2).">
                   <columns>
+                    <Column id="fclColCanalConfOrg"><Text id="fclTxtColCanalConfOrg" text="{i18n>colOrgVenta}"/></Column>
                     <Column id="fclColCanalConf"><Text id="fclTxtColCanalConf" text="{i18n>colCanalDist}"/></Column>
                   </columns>
                   <items>
                     <ColumnListItem id="fclCliCanalConf">
                       <cells>
-                        <Text id="fclTxtCanalConf" text="{canal}"/>
+                        <Text id="fclTxtCanalConfOrg" text="{orgVentas}"/>
+                        <Text id="fclTxtCanalConf" text="{canalDistribucion}"/>
                       </cells>
                     </ColumnListItem>
                   </items>

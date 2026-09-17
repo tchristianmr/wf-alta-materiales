@@ -17,6 +17,7 @@ import type {
   ResponsableVistaConfig,
   StatusVistaSimulado,
   CombinacionVentaConfig,
+  VentaMaterialSimulada,
   TipoMaterialRangoConfig,
   MaterialMaestroConfig,
   CentroCodigoTexto,
@@ -56,7 +57,8 @@ export default class DynamicPage extends Controller {
       this.getConfigRows<ResponsableVistaConfig>("responsableVista"),
       this.getConfigRows<StatusVistaSimulado>("statusVistas"),
       this.getConfigRows<CombinacionVentaConfig>("combinacionVenta"),
-      this.getConfigRows<TipoMaterialRangoConfig>("tipoMaterialRango")
+      this.getConfigRows<TipoMaterialRangoConfig>("tipoMaterialRango"),
+      this.getConfigRows<VentaMaterialSimulada>("ventaMaterial")
     );
   }
 
@@ -221,21 +223,10 @@ export default class DynamicPage extends Controller {
       oHeader.modoSolicitud === "extension" ? oHeader.material : undefined
     );
     oModel.setProperty("/vistasCrear", aVistas);
-    oModel.setProperty("/vistasVenta", oMgr.calcularCombinacionesVenta(oHeader.tipoMaterial));
-
-    const aCombinaciones = this.getConfigRows<CombinacionVentaConfig>("combinacionVenta").filter(
-      (c) => c.tipoMaterial === oHeader.tipoMaterial
-    );
-    const aCanalesUnicos: string[] = [];
-    aCombinaciones.forEach((c) => {
-      if (!aCanalesUnicos.includes(c.canalDistribucion)) {
-        aCanalesUnicos.push(c.canalDistribucion);
-      }
-    });
-    oModel.setProperty(
-      "/canalesConf",
-      aCanalesUnicos.map((c) => ({ canal: c }))
-    );
+    // "Vistas de Ventas" — simula MVKE: vistas de venta ya existentes para el MATERIAL de la solicitud.
+    oModel.setProperty("/vistasVenta", oMgr.calcularVistasVentaExistentes(oHeader.material));
+    // "Canales de Dist. Conf." — Objeto Custom 2: combinaciones Org.Ventas/Canal configuradas para el TIPO DE MATERIAL.
+    oModel.setProperty("/canalesConf", oMgr.calcularCombinacionesVenta(oHeader.tipoMaterial));
   }
 
   public onModificarDatos(_oEvent: Button$PressEvent): void {

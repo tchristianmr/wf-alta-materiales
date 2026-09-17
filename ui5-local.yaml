@@ -45,7 +45,8 @@ builder:
   resources:
     excludes:
       - /test/**
-      - /localService/**
+      - /docs/**
+      - /localService/metadata.xml
   customTasks:
     - name: ui5-tooling-transpile-task
       afterTask: replaceVersion

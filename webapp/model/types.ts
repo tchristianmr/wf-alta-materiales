@@ -106,7 +106,12 @@ export interface StatusVistaSimulado {
   vista: string;
   creada: boolean; // Semáforo "Creada" — simula MARC-PSTAT
   enWF: boolean; // Semáforo "En WF" — simula SWWWIHEAD
-  workItemId?: string; // SWWWIHEAD/SWWUSERWI, solo si enWF === true
+  // -- Solo pobladas si enWF === true; simulan SWWWIHEAD-WI_TEXT/WI_CD y SWWUSERWI-USER_ID
+  //    para la pestaña "Vistas en WF" (filtro WI_TYPE='W', WI_STAT no en ERROR/COMPLETED/CANCELLED,
+  //    SWWUSERWI-NO_SEL=' ') --
+  wiTitulo?: string; // SWWWIHEAD-WI_TEXT
+  wiFechaCreacion?: string; // SWWWIHEAD-WI_CD
+  wiUsuario?: string; // SWWUSERWI-USER_ID
 }
 
 /** Fila de la pestaña "Vistas a Crear" (MD Sección 4.1): ResponsableVistaConfig + StatusVistaSimulado fusionados. */
@@ -118,7 +123,18 @@ export interface VistasConfig {
   crear: boolean; // checkbox "Crear"
   creada: boolean; // semáforo verde/rojo — MARC-PSTAT
   enWF: boolean; // semáforo verde/rojo — SWWWIHEAD
-  workItemId?: string;
+  wiTitulo?: string;
+  wiFechaCreacion?: string;
+  wiUsuario?: string;
+}
+
+// --- MVKE simulado: Datos de ventas para el material (pestaña "Vistas de Ventas") ---------------
+
+/** Vistas de venta YA EXISTENTES para el material (Material/Org.Ventas/Canal) — solo aplica en modo Extensión. */
+export interface VentaMaterialSimulada {
+  material: string; // MVKE-MATNR
+  orgVentas: string; // MVKE-VKORG
+  canalDistribucion: string; // MVKE-VTWEG
 }
 
 // --- Objeto Custom 2: Combinaciones de Vistas de Venta -----------------------------------------
@@ -219,8 +235,8 @@ export interface SolicitudCarritoItem {
   id: string; // = header.solicitudId al momento de agregar
   header: MaterialHeader;
   vistasSeleccionadas: VistasConfig[]; // snapshot completo de vistasCrear (incluye no seleccionadas)
-  vistasVenta: { orgVentas: string; canalDistribucion: string }[];
-  canalesConf: { canal: string }[];
+  vistasVenta: VentaMaterialSimulada[]; // simula MVKE — vistas de venta ya existentes para el material
+  canalesConf: { orgVentas: string; canalDistribucion: string }[]; // Objeto Custom 2, filtrado por TipoMaterial
   filaGrid: ResultGrid; // proyección para las columnas del listado Master
   estadoEnvio: EstadoEnvio;
   // -- Derivados de (modoSolicitud, estadoEnvio) por calcularEstadoVisualCarrito(), materializados

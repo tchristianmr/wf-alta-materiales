@@ -3,6 +3,7 @@ import type {
   StatusVistaSimulado,
   CombinacionVentaConfig,
   TipoMaterialRangoConfig,
+  VentaMaterialSimulada,
   VistasConfig,
   MaterialHeader,
   ResultGrid,
@@ -32,7 +33,8 @@ export default class VistasManager {
     private readonly responsables: ResponsableVistaConfig[],
     private readonly statusVistas: StatusVistaSimulado[],
     private readonly combinacionesVenta: CombinacionVentaConfig[],
-    private readonly rangosTipoMaterial: TipoMaterialRangoConfig[]
+    private readonly rangosTipoMaterial: TipoMaterialRangoConfig[],
+    private readonly ventasMaterial: VentaMaterialSimulada[] = []
   ) {}
 
   /** Regla de validación UI #1 — consulta el T134 simulado (TipoMaterialRango). */
@@ -76,16 +78,29 @@ export default class VistasManager {
           crear: false,
           creada: oStatus?.creada ?? false,
           enWF: oStatus?.enWF ?? false,
-          workItemId: oStatus?.workItemId
+          wiTitulo: oStatus?.wiTitulo,
+          wiFechaCreacion: oStatus?.wiFechaCreacion,
+          wiUsuario: oStatus?.wiUsuario
         };
       });
   }
 
-  /** MD Objeto Custom 2 — combinaciones válidas de Org.Ventas/Canal para un Tipo de Material. */
+  /**
+   * MD Objeto Custom 2 — combinaciones configuradas de Org.Ventas/Canal para un Tipo de
+   * Material (pestaña "Canales de Dist. Conf.").
+   */
   public calcularCombinacionesVenta(sTipoMaterial: string): { orgVentas: string; canalDistribucion: string }[] {
     return this.combinacionesVenta
       .filter((c) => c.tipoMaterial === sTipoMaterial)
       .map((c) => ({ orgVentas: c.orgVentas, canalDistribucion: c.canalDistribucion }));
+  }
+
+  /** Simula MVKE — vistas de venta YA EXISTENTES para el material (pestaña "Vistas de Ventas"). */
+  public calcularVistasVentaExistentes(sMaterial: string): VentaMaterialSimulada[] {
+    if (!sMaterial) {
+      return [];
+    }
+    return this.ventasMaterial.filter((v) => v.material === sMaterial);
   }
 
   /** Simula el "Side Effect" de OData v4 que validaría Org.Ventas/Canal/TipoMaterial en tiempo real. */

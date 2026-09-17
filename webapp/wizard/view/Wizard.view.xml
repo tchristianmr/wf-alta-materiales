@@ -244,20 +244,20 @@
               <IconTabFilter id="wizTabVistasACrear" text="{i18n>tabVistasACrear}" key="crear" count="{= ${/vistasCrear}.length }">
                 <Table id="wizTblVistasACrear" items="{/vistasCrear}" mode="None" noDataText="No hay vistas configuradas (Objeto Custom 1) para este Centro/Tipo Material/Material de Exportación.">
                   <columns>
-                    <Column id="wizColChkCrear" width="3rem"><Text id="wizTxtColChk" text=""/></Column>
                     <Column id="wizColVista"><Text id="wizTxtColVista" text="{i18n>colVista}"/></Column>
                     <Column id="wizColDescVista"><Text id="wizTxtColDescVista" text="{i18n>colDescripcionVista}"/></Column>
                     <Column id="wizColUsuario"><Text id="wizTxtColUsuario" text="{i18n>colUsuario}"/></Column>
-                    <Column id="wizColSemCreada"><Text id="wizTxtColSemCreada" text="{i18n>colCreada}"/></Column>
-                    <Column id="wizColSemEnWF"><Text id="wizTxtColSemEnWF" text="{i18n>colEnWF}"/></Column>
+                    <Column id="wizColChkCrear" hAlign="Center" width="4rem"><Text id="wizTxtColChk" text="{i18n>colCrear}"/></Column>
+                    <Column id="wizColSemCreada" hAlign="Center"><Text id="wizTxtColSemCreada" text="{i18n>colCreada}"/></Column>
+                    <Column id="wizColSemEnWF" hAlign="Center"><Text id="wizTxtColSemEnWF" text="{i18n>colEnWF}"/></Column>
                   </columns>
                   <items>
                     <ColumnListItem id="wizCliVista">
                       <cells>
-                        <CheckBox id="wizChkVistaCrear" selected="{crear}" enabled="{= !${creada} &amp;&amp; !${enWF} }" select=".onVistaSelect"/>
                         <Text id="wizTxtVista" text="{vista}"/>
                         <Text id="wizTxtDescVista" text="{descripcionVista}"/>
                         <Text id="wizTxtUsuario" text="{usuarioResponsable}"/>
+                        <CheckBox id="wizChkVistaCrear" selected="{crear}" enabled="{= !${creada} &amp;&amp; !${enWF} }" select=".onVistaSelect"/>
                         <core:Icon id="wizIconCreada" src="{path:'creada', formatter:'.formatter.semaforoIcon'}" color="{= ${creada} ? '#107E3E' : '#BB0000' }"/>
                         <core:Icon id="wizIconEnWF" src="{path:'enWF', formatter:'.formatter.semaforoIcon'}" color="{= ${enWF} ? '#107E3E' : '#BB0000' }"/>
                       </cells>
@@ -286,16 +286,16 @@
               <IconTabFilter id="wizTabVistasEnWF" text="{i18n>tabVistasEnWF}" key="enwf" count="{path:'/vistasCrear', formatter:'.formatter.contarEnWF'}">
                 <Table id="wizTblVistasEnWF" items="{path:'/vistasCrear', filters:[{path:'enWF',operator:'EQ',value1:true}]}" mode="None" noDataText="Sin tareas pendientes (SWWWIHEAD/SWWUSERWI).">
                   <columns>
-                    <Column id="wizColEnWFVista"><Text id="wizTxtColEnWFVista" text="{i18n>colVista}"/></Column>
-                    <Column id="wizColEnWFDesc"><Text id="wizTxtColEnWFDesc" text="{i18n>colDescripcionVista}"/></Column>
-                    <Column id="wizColEnWFWorkItem"><Text id="wizTxtColEnWFWorkItem" text="{i18n>colWorkItem}"/></Column>
+                    <Column id="wizColEnWFTitulo"><Text id="wizTxtColEnWFTitulo" text="{i18n>colTitulo}"/></Column>
+                    <Column id="wizColEnWFFecha"><Text id="wizTxtColEnWFFecha" text="{i18n>colFechaCreacion}"/></Column>
+                    <Column id="wizColEnWFUsuario"><Text id="wizTxtColEnWFUsuario" text="{i18n>colUsuario}"/></Column>
                   </columns>
                   <items>
                     <ColumnListItem id="wizCliEnWF">
                       <cells>
-                        <Text id="wizTxtEnWFVista" text="{vista}"/>
-                        <Text id="wizTxtEnWFDesc" text="{descripcionVista}"/>
-                        <Text id="wizTxtEnWFWorkItem" text="{workItemId}"/>
+                        <Text id="wizTxtEnWFTitulo" text="{wiTitulo}"/>
+                        <Text id="wizTxtEnWFFecha" text="{wiFechaCreacion}"/>
+                        <Text id="wizTxtEnWFUsuario" text="{wiUsuario}"/>
                       </cells>
                     </ColumnListItem>
                   </items>
@@ -303,14 +303,16 @@
               </IconTabFilter>
 
               <IconTabFilter id="wizTabVistasVenta" text="{i18n>tabVistasDeVentas}" key="ventas" count="{= ${/vistasVenta}.length }">
-                <Table id="wizTblVistasVenta" items="{/vistasVenta}" mode="None" noDataText="Sin combinaciones de venta configuradas (simula consulta MVKE).">
+                <Table id="wizTblVistasVenta" items="{/vistasVenta}" mode="None" noDataText="Sin vistas de venta existentes (simula consulta MVKE).">
                   <columns>
+                    <Column id="wizColVentaMaterial"><Text id="wizTxtColVentaMaterial" text="{i18n>colMaterial}"/></Column>
                     <Column id="wizColVentaOrg"><Text id="wizTxtColVentaOrg" text="{i18n>colOrgVenta}"/></Column>
                     <Column id="wizColVentaCanal"><Text id="wizTxtColVentaCanal" text="{i18n>colCanalDist}"/></Column>
                   </columns>
                   <items>
                     <ColumnListItem id="wizCliVenta">
                       <cells>
+                        <Text id="wizTxtVentaMaterial" text="{material}"/>
                         <Text id="wizTxtVentaOrg" text="{orgVentas}"/>
                         <Text id="wizTxtVentaCanal" text="{canalDistribucion}"/>
                       </cells>
@@ -322,12 +324,14 @@
               <IconTabFilter id="wizTabCanalesConf" text="{i18n>tabCanalesDistConf}" key="canales" count="{= ${/canalesConf}.length }">
                 <Table id="wizTblCanalesConf" items="{/canalesConf}" mode="None" noDataText="Sin canales configurados (Objeto Custom 2).">
                   <columns>
+                    <Column id="wizColCanalConfOrg"><Text id="wizTxtColCanalConfOrg" text="{i18n>colOrgVenta}"/></Column>
                     <Column id="wizColCanalConf"><Text id="wizTxtColCanalConf" text="{i18n>colCanalDist}"/></Column>
                   </columns>
                   <items>
                     <ColumnListItem id="wizCliCanalConf">
                       <cells>
-                        <Text id="wizTxtCanalConf" text="{canal}"/>
+                        <Text id="wizTxtCanalConfOrg" text="{orgVentas}"/>
+                        <Text id="wizTxtCanalConf" text="{canalDistribucion}"/>
                       </cells>
                     </ColumnListItem>
                   </items>

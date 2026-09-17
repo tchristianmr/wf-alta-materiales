@@ -80,6 +80,10 @@
       "materialMaestro": {
         "type": "sap.ui.model.json.JSONModel",
         "uri": "localService/mockdata/MARA.json"
+      },
+      "ventaMaterial": {
+        "type": "sap.ui.model.json.JSONModel",
+        "uri": "localService/mockdata/MVKE.json"
       }
     },
     "resources": {

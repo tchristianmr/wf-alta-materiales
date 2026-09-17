@@ -65,16 +65,6 @@
             <core:Item id="dpItemTipoMaterial" key="{valueHelp>key}" text="{valueHelp>text}"/>
           </ComboBox>
 
-          <Label id="dpLblCentro" text="{i18n>lblCentro}"/>
-          <ComboBox
-            id="dpCbCentro"
-            selectedKey="{/header/centro}"
-            items="{valueHelp>/centros}"
-            editable="{= ${/header/estadoProceso} === 'Captura' }"
-            change=".onCentroChange">
-            <core:Item id="dpItemCentro" key="{valueHelp>key}" text="{valueHelp>text}"/>
-          </ComboBox>
-
           <Label id="dpLblRamo" text="{i18n>lblRamo}"/>
           <ComboBox
             id="dpCbRamo"
@@ -94,7 +84,7 @@
             width="60%">
             <core:Item id="dpItemTipoEntrada" key="{tipoEntradaCatalogo>idTipoEntrada}" text="{tipoEntradaCatalogo>idTipoEntrada}"/>
           </ComboBox>
-          <Text id="dpTxtDescTipoEntrada" text="{/header/tipoEntradaDesc}"/>
+          <Text id="dpTxtDescTipoEntrada" text="{/header/tipoEntradaDesc}"/>                           
 
           <!-- Regla de Negocio A (propuesta-3-dynamic-page.md): Folio visible solo si Tipo de
                Entrada es DNP, EE o CA — calculado en onTipoEntradaChange sobre /ui/isFolioVisible. -->
@@ -104,6 +94,16 @@
             value="{/header/folio}"
             visible="{/ui/isFolioVisible}"
             editable="{= ${/header/estadoProceso} === 'Captura' }"/>
+
+          <Label id="dpLblCentro" text="{i18n>lblCentro}"/>
+          <ComboBox
+            id="dpCbCentro"
+            selectedKey="{/header/centro}"
+            items="{valueHelp>/centros}"
+            editable="{= ${/header/estadoProceso} === 'Captura' }"
+            change=".onCentroChange">
+            <core:Item id="dpItemCentro" key="{valueHelp>key}" text="{valueHelp>text}"/>
+          </ComboBox>   
 
           <Label id="dpLblOrgVentas" text="{i18n>lblOrgVentas}"/>
           <ComboBox
@@ -199,20 +199,20 @@
             <IconTabFilter id="dpTabVistasACrear" text="{i18n>tabVistasACrear}" key="crear" count="{= ${/vistasCrear}.length }">
               <Table id="dpTblVistasACrear" items="{/vistasCrear}" mode="None" noDataText="No hay vistas configuradas (Objeto Custom 1) para este Centro/Tipo Material/Material de Exportación.">
                 <columns>
-                  <Column id="dpColChkCrear" width="3rem"><Text id="dpTxtColChk" text=""/></Column>
                   <Column id="dpColVista"><Text id="dpTxtColVista" text="{i18n>colVista}"/></Column>
                   <Column id="dpColDescVista"><Text id="dpTxtColDescVista" text="{i18n>colDescripcionVista}"/></Column>
                   <Column id="dpColUsuario"><Text id="dpTxtColUsuario" text="{i18n>colUsuario}"/></Column>
-                  <Column id="dpColSemCreada"><Text id="dpTxtColSemCreada" text="{i18n>colCreada}"/></Column>
-                  <Column id="dpColSemEnWF"><Text id="dpTxtColSemEnWF" text="{i18n>colEnWF}"/></Column>
+                  <Column id="dpColChkCrear" hAlign="Center" width="4rem"><Text id="dpTxtColChk" text="{i18n>colCrear}"/></Column>
+                  <Column id="dpColSemCreada" hAlign="Center"><Text id="dpTxtColSemCreada" text="{i18n>colCreada}"/></Column>
+                  <Column id="dpColSemEnWF" hAlign="Center"><Text id="dpTxtColSemEnWF" text="{i18n>colEnWF}"/></Column>
                 </columns>
                 <items>
                   <ColumnListItem id="dpCliVista">
                     <cells>
-                      <CheckBox id="dpChkVistaCrear" selected="{crear}" enabled="{= !${creada} &amp;&amp; !${enWF} &amp;&amp; ${/header/estadoProceso} === 'Confirmado' }" select=".onVistaSelect"/>
                       <Text id="dpTxtVista" text="{vista}"/>
                       <Text id="dpTxtDescVista" text="{descripcionVista}"/>
                       <Text id="dpTxtUsuario" text="{usuarioResponsable}"/>
+                      <CheckBox id="dpChkVistaCrear" selected="{crear}" enabled="{= !${creada} &amp;&amp; !${enWF} &amp;&amp; ${/header/estadoProceso} === 'Confirmado' }" select=".onVistaSelect"/>
                       <core:Icon id="dpIconCreada" src="{path:'creada', formatter:'.formatter.semaforoIcon'}" color="{= ${creada} ? '#107E3E' : '#BB0000' }"/>
                       <core:Icon id="dpIconEnWF" src="{path:'enWF', formatter:'.formatter.semaforoIcon'}" color="{= ${enWF} ? '#107E3E' : '#BB0000' }"/>
                     </cells>
@@ -241,16 +241,16 @@
             <IconTabFilter id="dpTabVistasEnWF" text="{i18n>tabVistasEnWF}" key="enwf" count="{path:'/vistasCrear', formatter:'.formatter.contarEnWF'}">
               <Table id="dpTblVistasEnWF" items="{path:'/vistasCrear', filters:[{path:'enWF',operator:'EQ',value1:true}]}" mode="None" noDataText="Sin tareas pendientes (SWWWIHEAD/SWWUSERWI).">
                 <columns>
-                  <Column id="dpColEnWFVista"><Text id="dpTxtColEnWFVista" text="{i18n>colVista}"/></Column>
-                  <Column id="dpColEnWFDesc"><Text id="dpTxtColEnWFDesc" text="{i18n>colDescripcionVista}"/></Column>
-                  <Column id="dpColEnWFWorkItem"><Text id="dpTxtColEnWFWorkItem" text="{i18n>colWorkItem}"/></Column>
+                  <Column id="dpColEnWFTitulo"><Text id="dpTxtColEnWFTitulo" text="{i18n>colTitulo}"/></Column>
+                  <Column id="dpColEnWFFecha"><Text id="dpTxtColEnWFFecha" text="{i18n>colFechaCreacion}"/></Column>
+                  <Column id="dpColEnWFUsuario"><Text id="dpTxtColEnWFUsuario" text="{i18n>colUsuario}"/></Column>
                 </columns>
                 <items>
                   <ColumnListItem id="dpCliEnWF">
                     <cells>
-                      <Text id="dpTxtEnWFVista" text="{vista}"/>
-                      <Text id="dpTxtEnWFDesc" text="{descripcionVista}"/>
-                      <Text id="dpTxtEnWFWorkItem" text="{workItemId}"/>
+                      <Text id="dpTxtEnWFTitulo" text="{wiTitulo}"/>
+                      <Text id="dpTxtEnWFFecha" text="{wiFechaCreacion}"/>
+                      <Text id="dpTxtEnWFUsuario" text="{wiUsuario}"/>
                     </cells>
                   </ColumnListItem>
                 </items>
@@ -258,14 +258,16 @@
             </IconTabFilter>
 
             <IconTabFilter id="dpTabVistasVenta" text="{i18n>tabVistasDeVentas}" key="ventas" count="{= ${/vistasVenta}.length }">
-              <Table id="dpTblVistasVenta" items="{/vistasVenta}" mode="None" noDataText="Sin combinaciones de venta configuradas (simula consulta MVKE).">
+              <Table id="dpTblVistasVenta" items="{/vistasVenta}" mode="None" noDataText="Sin vistas de venta existentes (simula consulta MVKE).">
                 <columns>
+                  <Column id="dpColVentaMaterial"><Text id="dpTxtColVentaMaterial" text="{i18n>colMaterial}"/></Column>
                   <Column id="dpColVentaOrg"><Text id="dpTxtColVentaOrg" text="{i18n>colOrgVenta}"/></Column>
                   <Column id="dpColVentaCanal"><Text id="dpTxtColVentaCanal" text="{i18n>colCanalDist}"/></Column>
                 </columns>
                 <items>
                   <ColumnListItem id="dpCliVenta">
                     <cells>
+                      <Text id="dpTxtVentaMaterial" text="{material}"/>
                       <Text id="dpTxtVentaOrg" text="{orgVentas}"/>
                       <Text id="dpTxtVentaCanal" text="{canalDistribucion}"/>
                     </cells>
@@ -277,12 +279,14 @@
             <IconTabFilter id="dpTabCanalesConf" text="{i18n>tabCanalesDistConf}" key="canales" count="{= ${/canalesConf}.length }">
               <Table id="dpTblCanalesConf" items="{/canalesConf}" mode="None" noDataText="Sin canales configurados (Objeto Custom 2).">
                 <columns>
+                  <Column id="dpColCanalConfOrg"><Text id="dpTxtColCanalConfOrg" text="{i18n>colOrgVenta}"/></Column>
                   <Column id="dpColCanalConf"><Text id="dpTxtColCanalConf" text="{i18n>colCanalDist}"/></Column>
                 </columns>
                 <items>
                   <ColumnListItem id="dpCliCanalConf">
                     <cells>
-                      <Text id="dpTxtCanalConf" text="{canal}"/>
+                      <Text id="dpTxtCanalConfOrg" text="{orgVentas}"/>
+                      <Text id="dpTxtCanalConf" text="{canalDistribucion}"/>
                     </cells>
                   </ColumnListItem>
                 </items>
