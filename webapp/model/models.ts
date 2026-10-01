@@ -16,12 +16,7 @@ export function generarSolicitudId(): string {
   return `draft-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
-/**
- * MaterialHeader con valores por defecto vacíos, listo para capturarse. `modoSolicitud` se
- * recibe como parámetro porque en el Prototipo 1 (Wizard) lo fija el tile de origen
- * (Crear Material / Extender Material — confirmado con el arquitecto), mientras que en el
- * Prototipo 2 (FCL) lo elige el usuario dentro del propio formulario.
- */
+/** MaterialHeader con valores por defecto vacíos, listo para capturarse. */
 export function createMaterialHeaderDraft(sModoSolicitud: ModoSolicitud = "creacion"): MaterialHeader {
   return {
     solicitudId: generarSolicitudId(),
@@ -33,7 +28,6 @@ export function createMaterialHeaderDraft(sModoSolicitud: ModoSolicitud = "creac
     ramoDesc: "",
     tipoEntrada: "",
     tipoEntradaDesc: "",
-    folio: "",
     centro: "",
     centroDesc: "",
     orgVentas: "",
@@ -57,36 +51,8 @@ export function createMaterialHeaderDraft(sModoSolicitud: ModoSolicitud = "creac
 }
 
 /**
- * Modelo local compartido por ambos prototipos (Wizard y FCL) para una solicitud en curso:
- * header + estado de UI (semáforos de bloqueo, mensajes) + vistas calculadas + grid local
- * (MD Sección 5). Cada prototipo instancia su propia copia — no es un singleton compartido
- * en tiempo de ejecución, sino la misma FORMA de modelo reutilizada por ambos.
- */
-export function createSolicitudModel(sModoSolicitud: ModoSolicitud = "creacion"): JSONModel {
-  return new JSONModel({
-    header: createMaterialHeaderDraft(sModoSolicitud),
-    ui: {
-      messageStripText: "",
-      messageStripType: "None",
-      messageStripVisible: false,
-      step1Validated: false,
-      step2Validated: false,
-      step3Validated: false,
-      hayRegistrosEnGrid: false
-    },
-    vistasCrear: [],
-    vistasVenta: [],
-    canalesConf: [],
-    grid: []
-  });
-}
-
-/**
- * Modelo local del Prototipo 3 (Dynamic Page, propuesta-3-dynamic-page.md). Igual que FCL, no
- * hay pasos: un único `ui/formValidated` gobierna "Confirmar Datos". `ui/isFolioVisible`
- * implementa la Regla de Negocio A del documento (Folio visible solo si Tipo de Entrada es
- * DNP/EE/CA). El staging es el mismo `grid` (ResultGrid[]) de solo lectura del Wizard — no
- * hace falta el `carrito` enriquecido de FCL porque aquí no se puede reabrir una fila agregada.
+ * Modelo local de Dynamic Page (propuesta-3-dynamic-page.md): header + estado de UI + vistas
+ * calculadas + grid local (MD Sección 5).
  */
 export function createDynamicPageModel(): JSONModel {
   return new JSONModel({
@@ -97,39 +63,11 @@ export function createDynamicPageModel(): JSONModel {
       messageStripVisible: false,
       formValidated: false,
       rangoNumeracion: undefined,
-      isFolioVisible: true,
       hayRegistrosEnGrid: false
     },
     vistasCrear: [],
     vistasVenta: [],
     canalesConf: [],
     grid: []
-  });
-}
-
-/**
- * Modelo local del Prototipo 2 (FCL / Split App, propuesta-2-split-app.md). A diferencia del
- * Wizard, aquí no hay pasos: un único `ui/formValidated` gobierna el botón "Confirmar Datos",
- * y `ui/modoLectura` + `ui/carritoSeleccionadoId` controlan si el panel Detail muestra la
- * captura activa o el detalle de solo lectura de un ítem ya guardado en el carrito.
- */
-export function createCarritoModel(): JSONModel {
-  return new JSONModel({
-    header: createMaterialHeaderDraft("creacion"),
-    ui: {
-      messageStripText: "",
-      messageStripType: "None",
-      messageStripVisible: false,
-      formValidated: false,
-      rangoNumeracion: undefined,
-      modoLectura: false,
-      carritoSeleccionadoId: null,
-      hayRegistrosEnCarrito: false,
-      fclLayoutExpandido: false
-    },
-    vistasCrear: [],
-    vistasVenta: [],
-    canalesConf: [],
-    carrito: []
   });
 }

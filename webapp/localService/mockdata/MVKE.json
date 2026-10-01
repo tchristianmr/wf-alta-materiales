@@ -1,8 +1,0 @@
-{
-  "_comment": "DUMMY — simula MVKE (Datos de ventas para el material). Vistas de venta YA EXISTENTES para el material, mostradas en la pestaña 'Vistas de Ventas'. Solo aplica en modo Extensión — un material nuevo (Creación) todavía no tiene registros en MVKE.",
-  "rows": [
-    { "material": "000000000100000501", "orgVentas": "1000", "canalDistribucion": "10" },
-    { "material": "ALFA-FERT-2024", "orgVentas": "1000", "canalDistribucion": "10" },
-    { "material": "ALFA-FERT-2024", "orgVentas": "2000", "canalDistribucion": "20" }
-  ]
-}

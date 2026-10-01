@@ -1,5 +1,5 @@
 /* global QUnit */
-sap.ui.require(["integration/NavigationJourney"
+sap.ui.require([
 ], function () {
 	QUnit.config.autostart = false;
 	QUnit.start();

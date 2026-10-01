@@ -10,6 +10,15 @@
     "title": "{{appTitle}}",
     "description": "{{appDescription}}",
     "resources": "resources.json",
+    "dataSources": {
+      "mainService": {
+        "uri": "/sap/opu/odata4/sap/zpp_ui_altextmaterial_o4/srvd/sap/zpp_ui_altextmaterial_srv/0001/",
+        "type": "OData",
+        "settings": {
+          "odataVersion": "4.0"
+        }
+      }
+    },
     "sourceTemplate": {
       "id": "@sap/generator-fiori:basic",
       "version": "1.31.0",
@@ -39,7 +48,8 @@
       "libs": {
         "sap.m": {},
         "sap.ui.core": {},
-        "sap.f": {}
+        "sap.f": {},
+        "sap.ui.layout": {}
       }
     },
     "contentDensities": {
@@ -50,40 +60,25 @@
       "i18n": {
         "type": "sap.ui.model.resource.ResourceModel",
         "settings": {
-          "bundleName": "com.alen.mm.wfaltamat.i18n.i18n"
+          "bundleName": "com.alen.mm.wfaltamat.i18n.i18n",
+          "supportedLocales": ["", "es", "en"],
+          "fallbackLocale": "en"
         }
       },
-      "valueHelp": {
-        "type": "sap.ui.model.json.JSONModel",
-        "uri": "localService/mockdata/ValueHelp.json"
+      "altextmaterial": {
+        "dataSource": "mainService",
+        "type": "sap.ui.model.odata.v4.ODataModel",
+        "settings": {
+          "synchronizationMode": "None",
+          "autoExpandSelect": true,
+          "earlyRequests": false,
+          "groupId": "$auto",
+          "updateGroupId": "$auto"
+        }
       },
       "responsableVista": {
         "type": "sap.ui.model.json.JSONModel",
         "uri": "localService/mockdata/ObjetoCustom1.json"
-      },
-      "combinacionVenta": {
-        "type": "sap.ui.model.json.JSONModel",
-        "uri": "localService/mockdata/ObjetoCustom2.json"
-      },
-      "tipoEntradaCatalogo": {
-        "type": "sap.ui.model.json.JSONModel",
-        "uri": "localService/mockdata/ObjetoCustom3.json"
-      },
-      "tipoMaterialRango": {
-        "type": "sap.ui.model.json.JSONModel",
-        "uri": "localService/mockdata/TipoMaterialRango.json"
-      },
-      "statusVistas": {
-        "type": "sap.ui.model.json.JSONModel",
-        "uri": "localService/mockdata/StatusVistas.json"
-      },
-      "materialMaestro": {
-        "type": "sap.ui.model.json.JSONModel",
-        "uri": "localService/mockdata/MARA.json"
-      },
-      "ventaMaterial": {
-        "type": "sap.ui.model.json.JSONModel",
-        "uri": "localService/mockdata/MVKE.json"
       }
     },
     "resources": {
@@ -107,65 +102,15 @@
       },
       "routes": [
         {
-          "name": "launchpad",
-          "pattern": "",
-          "target": ["TargetLaunchpad"]
-        },
-        {
-          "name": "wizardLaunchpad",
-          "pattern": "wizard",
-          "target": ["TargetWizardLaunchpad"]
-        },
-        {
-          "name": "wizard",
-          "pattern": "wizard/{modo}",
-          "target": ["TargetWizard"]
-        },
-        {
-          "name": "fclLaunchpad",
-          "pattern": "fcl",
-          "target": ["TargetFCLLaunchpad"]
-        },
-        {
-          "name": "fcl",
-          "pattern": "fcl/gestionar",
-          "target": ["TargetFCL"]
-        },
-        {
           "name": "dynamicPage",
-          "pattern": "dynamic-page",
+          "pattern": "",
           "target": ["TargetDynamicPage"]
         }
       ],
       "targets": {
-        "TargetLaunchpad": {
-          "id": "Launchpad",
-          "name": "Launchpad"
-        },
-        "TargetWizardLaunchpad": {
-          "id": "WizardLaunchpad",
-          "name": "WizardLaunchpad",
-          "path": "com.alen.mm.wfaltamat.wizard.view"
-        },
-        "TargetWizard": {
-          "id": "Wizard",
-          "name": "Wizard",
-          "path": "com.alen.mm.wfaltamat.wizard.view"
-        },
-        "TargetFCLLaunchpad": {
-          "id": "FCLLaunchpad",
-          "name": "FCLLaunchpad",
-          "path": "com.alen.mm.wfaltamat.fcl.view"
-        },
-        "TargetFCL": {
-          "id": "FCL",
-          "name": "FCL",
-          "path": "com.alen.mm.wfaltamat.fcl.view"
-        },
         "TargetDynamicPage": {
           "id": "DynamicPage",
-          "name": "DynamicPage",
-          "path": "com.alen.mm.wfaltamat.dynamicpage.view"
+          "name": "DynamicPage"
         }
       }
     },

@@ -1,9 +1,0 @@
-{
-  "_comment": "DUMMY — simula T134-NUMKE (rango de numeración interno/externo por Tipo de Material). No es un Objeto Custom del MD; acordado con el arquitecto para resolver la regla de validación UI #1. Elección ilustrativa: FERT con numeración externa (catálogos comerciales), materias primas/semielaborados/embalaje con numeración interna — señalado para confirmación de negocio.",
-  "rows": [
-    { "tipoMaterial": "FERT", "rango": "Externo" },
-    { "tipoMaterial": "HALB", "rango": "Interno" },
-    { "tipoMaterial": "ROH", "rango": "Interno" },
-    { "tipoMaterial": "VERP", "rango": "Interno" }
-  ]
-}

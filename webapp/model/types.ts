@@ -1,15 +1,18 @@
 /**
- * Tipos de dominio — GAP_P2P_07 (Alta/Extensión de Materiales, migración ZWFMM01).
+ * Tipos de dominio — GAP_P2P_08 (Alta/Extensión de Materiales, migración ZWFMM01).
  *
  * Reflejan literalmente los campos listados en UI_Prototype_Specification.md (Secciones 1, 2,
  * 4 y 5, más la definición de los 3 Objetos Custom). Los comentarios //-- referencian el campo
  * SAP legacy correspondiente cuando el MD lo cita explícitamente.
  *
- * Diseñados para mapear 1:1 con las entidades de localService/metadata.xml, de forma que el
- * futuro ODataModel v4 (RAP) pueda sustituir los JSONModel mock sin tocar estas interfaces.
+ * NOTA 2026-09-18: `localService/metadata.xml` quedó obsoleto como referencia de contrato — el
+ * backend real (Service Binding ZPP_UI_ALTEXTMATERIAL_O4 sobre la entidad custom
+ * ZPPD_R_ALTEXTMATERIAL) fue inspeccionado directamente en S4D vía ADT. El contrato real vive
+ * al final de este archivo (interfaces *RAP) y se documenta en
+ * docs/estrategia-tecnica-migracion-rap-odata.md. Los tipos de dominio de arriba (MaterialHeader,
+ * VistasConfig, etc.) se mantienen sin cambios de forma — el mapeo hacia/desde el contrato real
+ * lo hace AltExtMaterialService.ts, no estas interfaces.
  */
-
-// --- Enumeraciones de dominio -------------------------------------------------------------
 
 /** Paso 1 del User Journey (MD Sección 4). No es un campo SAP legacy explícito. */
 export type ModoSolicitud = "creacion" | "extension";
@@ -20,22 +23,17 @@ export type ModoProceso = "M" | "D"; // M = Fabricación, D = Distribución
 /** Gobierna el bloqueo de campos (reglas UI #3 y #7 del MD). */
 export type EstadoProceso = "Captura" | "Confirmado" | "Agregado";
 
+/** Estado de envío de una fila del grid: pendiente, o el código devuelto por IM_SendWF (S/W/E). */
+export type EstadoEnvio = "pendiente" | "S" | "W" | "E";
+
 /** T134-NUMKE simulado — ver TipoMaterialRangoConfig. */
-export type RangoNumeracion = "Interno" | "Externo";
+export type RangoNumeracion = "Interno" | "Externo" | "SinRango"; // <-- AGREGAR AQUÍ: "SinRango"
 
 // --- Catálogos genéricos (value help) -------------------------------------------------------
-
 export interface CodigoTexto {
   key: string;
   text: string;
 }
-
-/** Centro con país, necesario para la regla "FERT en centros México/USA ⇒ UM = CJ/PAL". */
-export interface CentroCodigoTexto extends CodigoTexto {
-  pais: "MX" | "US" | string;
-}
-
-// --- Entidad principal: Solicitud de Alta/Extensión (MaterialHeader) ------------------------
 
 /**
  * Cabecera de la solicitud. Combina MD Sección 1 (Datos Generales) y Sección 2 (Datos Básicos,
@@ -55,10 +53,10 @@ export interface MaterialHeader {
   ramoDesc: string; // T137T-MBBEZ, CHAR25
   tipoEntrada: string; // Objeto Custom 3, CHAR3
   tipoEntradaDesc: string; // Objeto Custom 3, descripción (resuelto vía valueHelp, solo lectura)
-  folio: string; // CHAR10
+  // Folio: descartado de la UI el 2026-09-24 (no lo almacena ni lo usa el backend).
   centro: string; // WERKS, CHAR4
   centroDesc: string; // NAME1, CHAR30
-  orgVentas: string; // VKORG, CHAR4 — obligatorio solo si se selecciona la vista Ventas
+  orgVentas: string; // VKORG, CHAR4 — el front lo exige solo con la vista Ventas; IM_ValMaterial (Regla 6) lo valida siempre (pendiente con Janeth)
   orgVentasDesc: string; // VTEXT, CHAR20
   materialMaquilado: boolean; // ZMAQ1
   materialExportacion: boolean; // ZINDEXP — también es parte de la llave de búsqueda en Objeto Custom 1
@@ -81,8 +79,6 @@ export interface MaterialHeader {
   estadoProceso: EstadoProceso;
 }
 
-// --- Objeto Custom 1: Responsables por Vista -------------------------------------------------
-
 /**
  * Llave compuesta CONFIRMADA con el arquitecto: Centro + TipoMaterial + Vista +
  * MaterialExportacion. El indicador XFELD es parte de la llave de búsqueda, no solo informativo.
@@ -97,25 +93,9 @@ export interface ResponsableVistaConfig {
   usuarioResponsable2?: string; // "listas de usuarios soportadas" — 2do responsable opcional
 }
 
-// --- Mock de MARC-PSTAT / SWWWIHEAD (semáforos) ----------------------------------------------
-
-/** Solo aplica en modo Extensión: vistas que ya existen o ya tienen un Work Item activo. */
-export interface StatusVistaSimulado {
-  material: string;
-  centro: string;
-  vista: string;
-  creada: boolean; // Semáforo "Creada" — simula MARC-PSTAT
-  enWF: boolean; // Semáforo "En WF" — simula SWWWIHEAD
-  // -- Solo pobladas si enWF === true; simulan SWWWIHEAD-WI_TEXT/WI_CD y SWWUSERWI-USER_ID
-  //    para la pestaña "Vistas en WF" (filtro WI_TYPE='W', WI_STAT no en ERROR/COMPLETED/CANCELLED,
-  //    SWWUSERWI-NO_SEL=' ') --
-  wiTitulo?: string; // SWWWIHEAD-WI_TEXT
-  wiFechaCreacion?: string; // SWWWIHEAD-WI_CD
-  wiUsuario?: string; // SWWUSERWI-USER_ID
-}
-
 /** Fila de la pestaña "Vistas a Crear" (MD Sección 4.1): ResponsableVistaConfig + StatusVistaSimulado fusionados. */
 export interface VistasConfig {
+  secuencia?: number;
   vista: string;
   descripcionVista: string;
   usuarioResponsable: string; // Responsable 1
@@ -128,52 +108,7 @@ export interface VistasConfig {
   wiUsuario?: string;
 }
 
-// --- MVKE simulado: Datos de ventas para el material (pestaña "Vistas de Ventas") ---------------
-
-/** Vistas de venta YA EXISTENTES para el material (Material/Org.Ventas/Canal) — solo aplica en modo Extensión. */
-export interface VentaMaterialSimulada {
-  material: string; // MVKE-MATNR
-  orgVentas: string; // MVKE-VKORG
-  canalDistribucion: string; // MVKE-VTWEG
-}
-
-// --- Objeto Custom 2: Combinaciones de Vistas de Venta -----------------------------------------
-
-/**
- * NOTA: el MD define la llave como (TipoMaterial, OrgVentas) y Canal como campo de DATOS
- * (no de llave) — es decir, una única combinación de canal válida por Org.Ventas+TipoMaterial.
- * Lo implemento tal como está escrito en el MD; si en la práctica se necesitan varios canales
- * válidos para la misma Org.Ventas, Canal tendría que sumarse a la llave. Señalado para revisión.
- */
-export interface CombinacionVentaConfig {
-  tipoMaterial: string;
-  orgVentas: string;
-  canalDistribucion: string;
-}
-
-// --- Objeto Custom 3: Catálogo de Tipos de Entrada ---------------------------------------------
-
-export interface TipoEntradaConfig {
-  idTipoEntrada: string; // CHAR3
-  descripcion: string; // CHAR40 en MD 2.1 ("Desc. Tip. Entr."); la def. del Objeto Custom 3 dice CHAR30 — uso CHAR40 (el más detallado) y lo señalo.
-}
-
-// --- MARA simulado: solo para autofill de Datos Básicos en modo Extensión (nuevo, no es Objeto Custom del MD) --
-
-export interface MaterialMaestroConfig {
-  material: string;
-  tipoMaterial: string;
-  ramo: string;
-  descripcionEs: string;
-  umBase: string;
-  sector: string;
-  grupoTipoPosGral: string;
-  grupoArticulos: string;
-  jerarquiaProductos: string;
-}
-
-// --- T134 simulado: Rango de Numeración por Tipo de Material (nuevo, acordado con el arquitecto) --
-
+// --- Rango de numeración por Tipo de Material (viene de ZPPD_I_MATERIALRANGO)
 export interface TipoMaterialRangoConfig {
   tipoMaterial: string;
   rango: RangoNumeracion;
@@ -201,47 +136,163 @@ export interface ResultGrid {
   orgVentas: string;
   jerarquiaProductos: string;
   vistasACrear: string; // concatenadas, ej. "K, B, D, V"
+  modoSolicitud: ModoSolicitud;
+  entrada: EntryParametersRAP; // entrada completa que se enviará a IM_SendWF (idlinea = solicitudId, views concatenadas)
+  estado: EstadoEnvio;
+  mensaje: string; // mensaje del backend tras el envío
 }
 
 // --- Resultado de validaciones (feedback inmediato en cliente) ---------------------------------
 
 export interface ResultadoValidacion {
   valido: boolean;
-  mensaje?: string;
+  claveMensaje?: string;
+  argsMensaje?: string[];
 }
 
-/** Contexto mínimo que VistasManager necesita para las validaciones del botón "Agregar" (MD Sección 4, Paso 4). */
+/** Contexto mínimo que VistasManager necesita para las validaciones del botón "Agregar". */
 export interface ContextoValidacionAgregar {
   tipoMaterial: string;
-  centro: string;
-  paisCentro: string; // resuelto por el caller desde ValueHelp.centros[].pais — el manager no conoce el catálogo
   orgVentas: string;
-  umBase: string;
+  canalesConfigurados: { orgVentas: string; canalDistribucion: string }[];
 }
 
-// --- Prototipo 2 (FCL / Split App) — carrito de solicitudes -------------------------------------
-
-/** Estado de tránsito de un ítem del carrito (propuesta-2-split-app.md v2, Sección 2). */
-export type EstadoEnvio = "Listo" | "Enviando" | "Enviado";
+// ================================================================================================
+// Contrato real RAP — confirmado por inspección directa en S4D vía ADT (2026-09-18).
+// Service Binding: ZPP_UI_ALTEXTMATERIAL_O4 · Entidad: ZPPD_R_ALTEXTMATERIAL (custom entity, unmanaged,
+// sin draft, key: material). Ver docs/estrategia-tecnica-migracion-rap-odata.md para el detalle completo
+// de madurez por acción. Estas interfaces son el espejo 1:1 de las abstract entities ABAP — el mapeo
+// hacia/desde los tipos de dominio de arriba lo hace AltExtMaterialService.ts, nunca el controller.
+// ================================================================================================
 
 /**
- * Ítem del carrito del Panel Izquierdo (Master). A diferencia de ResultGrid (una proyección
- * plana usada solo para las columnas del listado/grid del Wizard), este snapshot conserva el
- * MaterialHeader y las vistas completas tal como quedaron al presionar "Agregar al Listado",
- * para poder reconstruir el detalle EXACTO en modo Solo Lectura al seleccionar el ítem
- * (propuesta-2-split-app.md, Sección 3, Regla 1).
+ * Espejo de `ZPPS_EntryParameters` — una fila de `_material[]` en el parámetro de las 6 acciones.
+ * Los flags viajan como CHAR1 ('X'/''), no boolean — el mapeo lo hace el service, no la vista.
+ *
+ * ✅ VERIFICADO contra el `$metadata` real (2026-09-18) — `material` es MaxLength 40 aquí (no 10
+ * como en la key de `ZPPD_R_ALTEXTMATERIAL`); el resto de longitudes coincide con lo inferido del
+ * BDEF.
  */
-export interface SolicitudCarritoItem {
-  id: string; // = header.solicitudId al momento de agregar
-  header: MaterialHeader;
-  vistasSeleccionadas: VistasConfig[]; // snapshot completo de vistasCrear (incluye no seleccionadas)
-  vistasVenta: VentaMaterialSimulada[]; // simula MVKE — vistas de venta ya existentes para el material
-  canalesConf: { orgVentas: string; canalDistribucion: string }[]; // Objeto Custom 2, filtrado por TipoMaterial
-  filaGrid: ResultGrid; // proyección para las columnas del listado Master
-  estadoEnvio: EstadoEnvio;
-  // -- Derivados de (modoSolicitud, estadoEnvio) por calcularEstadoVisualCarrito(), materializados
-  //    aquí para que el sap.m.ObjectStatus del listado no dependa de un formatter multi-parte --
-  estadoIconSrc: string;
-  estadoTexto: string;
-  estadoState: "Success" | "Information" | "Warning" | "None";
+export interface EntryParametersRAP {
+  idlinea: string;            // char36 — el solicitudId (UUID) de la fila; el backend lo devuelve idéntico en la respuesta
+  material: string;           // MATNR, MaxLength 40 en este contexto
+  tipoMaterial: string;       // MTART
+  ramo: string;               // MBRSH
+  tipoEntrada: string;        // ZENTTYPE, CHAR3
+  centro: string;             // WERKS_D
+  orgVtas: string;            // VKORG
+  flagMaquila: string;        // ZMATMAQ — 'X' | ''
+  flagExpMat: string;         // ZEXPMAT — 'X' | ''
+  flagModPro: string;         // ZMODPRO — 'F' (Fabricación) | 'D' (Distribución)
+  descripcion: string;        // MAKTX
+  umBase: string;             // CHAR3 (confirmado en el CDS real — no es el elemento MEINS aquí)
+  sector: string;             // SPART
+  grupoTipoPosGral: string;   // MTPOS_MARA
+  grupoArticulos: string;     // MATKL
+  jerarquiaProductos: string; // PRODH_D
+  matExt: string;             // CHAR7 — literal "Interno" | "Externo" (no booleano)
+  views: string;              // PSTAT_D (char15) — en IM_ValMaterial va UNA letra por llamada; en el envío, todas concatenadas (ej. "ACD")
+}
+
+/**
+ * Espejo de `ZPPS_RMATERIAL` — resultado de `IM_CreateMaterial`/`IM_ExtendMaterial`.
+ */
+export interface RMaterialRAP {
+  material: string;
+  tipoMaterial: string;
+  ramo: string;
+  tipoEntrada: string;
+  centro: string;
+  orgVtas: string;
+  flagMaquila: string;
+  flagExpMat: string;
+  flagModPro: string;
+  descripcion: string;
+  umBase: string;
+  sector: string;
+  grupoTipoPosGral: string;
+  grupoArticulos: string;
+  jerarquiaProductos: string;
+  matExt: string;
+  id: string; // tipo mensaje estilo BAPI_RETURN ('E'/'S'/...)
+  mensaje: string;
+  _createdView: { idView: string; descripcion: string }[];
+  _viewsWF: { idView: string; descripcion: string; fechacreacion: string; usuarios: string }[];
+  _disChannel: { orgVtas: string; canalDis: string }[];
+  _viewsxcreate: { idsec: number; vista: string; creada: boolean; enWF: boolean; wiUsuario: string }[];
+  _salesViews: { material: string; orgventas: string; canaldistribucion: string }[];
+}
+
+/** Espejo de `ZPPS_RVALIDATION` — resultado de `IM_ValMaterial`/`IM_SendWF` (ambas devuelven colección). */
+export interface RValidationRAP {
+  idlinea: string;
+  material: string;
+  id: string;
+  mensaje: string;
+}
+
+/** Espejo de `ZPPS_RPLANTMTART` — resultado de `IM_PlantByMtart`. ✅ Acción completamente funcional. */
+export interface RPlantMtartRAP {
+  plant: string;
+  plantName: string;
+}
+
+/** Espejo de `ZPPS_RORGVTAMTART` — resultado de `IM_OrgVtaByMtart`. ✅ Acción completamente funcional. */
+export interface ROrgVtaMtartRAP {
+  orgvta: string;
+  name: string;
+}
+
+
+// ================================================================================================
+// Value Helps estáticas — espejo de los 7 EntitySet reales confirmados en $metadata.
+// Consumidas por AltExtMaterialService (utils/), no por binding directo en el XML.
+// ================================================================================================
+
+/** Espejo de `ZPPD_I_PRODUCTTYPE_VHType`. */
+export interface ProductTypeVH {
+  Mtart: string;
+  MaterialTypeName: string;
+}
+
+/** Espejo de `ZPPD_I_INDUSTRYSECTOR_VHType`. */
+export interface IndustrySectorVH {
+  idRamo: string;
+  descripcion: string;
+}
+
+/** Espejo de `ZPPD_I_TIPENT_VHType`. */
+export interface TipEntVH {
+  idTipoEntrada: string;
+  descripcion: string;
+}
+
+/** Espejo de `ZPPD_I_UnitOfMeasureText_VHType`. */
+export interface UnitOfMeasureVH {
+  UnitOfMeasure: string;
+  UnitOfMeasureLongName: string;
+}
+
+/** Espejo de `ZPPD_I_DivisionText_VHType`. */
+export interface DivisionTextVH {
+  Division: string;
+  DivisionName: string;
+}
+
+/** Espejo de `ZPPD_I_ItemCategoryGroupTextVHType`. */
+export interface ItemCategoryGroupVH {
+  ItemCategoryGroup: string;
+  ItemCategoryGroupName: string;
+}
+
+/** Espejo de `ZPPD_I_PRODUCTGROUPTEXT_2_VHType`. */
+export interface ProductGroupVH {
+  ProductGroup: string;
+  ProductGroupText: string;
+}
+
+/** Espejo de `ZPPD_I_MATERIALRANGO` (rango de numeración por Tipo de Material). */
+export interface MaterialRangoVH {
+  tipoMaterial: string;
+  rango: RangoNumeracion;
 }

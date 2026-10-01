@@ -1,5 +1,5 @@
 <mvc:View
-  controllerName="com.alen.mm.wfaltamat.dynamicpage.controller.DynamicPage"
+  controllerName="com.alen.mm.wfaltamat.controller.DynamicPage"
   xmlns:mvc="sap.ui.core.mvc"
   xmlns="sap.m"
   xmlns:f="sap.f"
@@ -43,77 +43,139 @@
         <form:SimpleForm id="dpFormGenerales" editable="true" layout="ResponsiveGridLayout">
           <core:Title id="dpTitleGenerales" text="{i18n>stepDatosGenerales}"/>
 
-          <!-- Nota: el MD de Propuesta 3 no lista "Material" explícitamente en Sub-sección 1,
-               pero es indispensable (obligatorio en Extensión, obligatorio si rango Externo en
-               Creación) y sí aparece en el MD base (GAP_P2P_07) y en Wizard/FCL. Se incluye aquí
-               por consistencia funcional; señalado para confirmación del arquitecto. -->
           <Label id="dpLblMaterial" text="{i18n>lblMaterial}"/>
           <Input
             id="dpInpMaterial"
             value="{/header/material}"
             editable="{= ${/header/estadoProceso} === 'Captura' &amp;&amp; (${/header/modoSolicitud} === 'extension' || ${/ui/rangoNumeracion} !== 'Interno') }"
-            placeholder="{= ${/ui/rangoNumeracion} === 'Interno' &amp;&amp; ${/header/modoSolicitud} === 'creacion' ? 'Se asigna automáticamente (rango interno)' : 'Número de material' }"
+            placeholder="{= ${/ui/rangoNumeracion} === 'Interno' &amp;&amp; ${/header/modoSolicitud} === 'creacion' ? ${i18n>phMaterialInterno} : ${i18n>phMaterialNumero} }"
             change=".onMaterialChange"/>
 
           <Label id="dpLblTipoMaterial" text="{i18n>lblTipoMaterial}"/>
-          <ComboBox
-            id="dpCbTipoMaterial"
-            selectedKey="{/header/tipoMaterial}"
-            items="{valueHelp>/tiposMaterial}"
-            editable="{= ${/header/estadoProceso} === 'Captura' }"
-            change=".onTipoMaterialChange">
-            <core:Item id="dpItemTipoMaterial" key="{valueHelp>key}" text="{valueHelp>text}"/>
-          </ComboBox>
+          <Input
+            id="dpInpTipoMaterial"
+            value="{/header/tipoMaterial}"
+            description="{/header/tipoMaterialDesc}"
+            fieldWidth="35%"
+            showValueHelp="true"
+            valueHelpRequest=".onAyudaBusqueda"
+            showSuggestion="true"
+            filterSuggests="false"
+            suggest=".onSuggestFiltrar"
+            suggestionRows="{valueHelp>/tiposMaterial}"
+            suggestionItemSelected=".onAyudaSugerenciaSeleccionada"
+            change=".onAyudaCambio"
+            editable="{= ${/header/estadoProceso} === 'Captura' }">
+            <customData><core:CustomData key="campo" value="tipoMaterial"/></customData>
+            <suggestionColumns>
+              <Column id="colTpMatCodigo" width="8rem"><header><Text id="txtTpMatCodigo" text="{i18n>vhColCodigo}"/></header></Column>
+              <Column id="colTpMatDescripcion"><header><Text id="txtTpMatDescripcion" text="{i18n>vhColDescripcion}"/></header></Column>
+            </suggestionColumns>
+            <suggestionRows>
+              <ColumnListItem id="colTpMatListItem"><cells><Label id="LblTpMatCodigo" text="{valueHelp>key}"/><Label id="LblTpMatDescripcion" text="{valueHelp>text}"/></cells></ColumnListItem>
+            </suggestionRows>
+          </Input>
 
           <Label id="dpLblRamo" text="{i18n>lblRamo}"/>
-          <ComboBox
-            id="dpCbRamo"
-            selectedKey="{/header/ramo}"
-            items="{valueHelp>/ramos}"
+          <Input
+            id="dpInpRamo"
+            value="{/header/ramo}"
+            description="{/header/ramoDesc}"
+            fieldWidth="35%"
+            showValueHelp="true"
+            valueHelpRequest=".onAyudaBusqueda"
+            showSuggestion="true"
+            filterSuggests="false"
+            suggest=".onSuggestFiltrar"
+            suggestionRows="{valueHelp>/ramos}"
+            suggestionItemSelected=".onAyudaSugerenciaSeleccionada"
+            change=".onAyudaCambio"
             editable="{= ${/header/estadoProceso} === 'Captura' }">
-            <core:Item id="dpItemRamo" key="{valueHelp>key}" text="{valueHelp>text}"/>
-          </ComboBox>
+            <customData><core:CustomData key="campo" value="ramo"/></customData>
+            <suggestionColumns>
+              <Column id="colRamoCodigo" width="8rem"><header><Text id="txtRamoCodigo" text="{i18n>vhColCodigo}"/></header></Column>
+              <Column id="colRamoDescripcion"><header><Text id="txtRamoDescripcion" text="{i18n>vhColDescripcion}"/></header></Column>
+            </suggestionColumns>
+            <suggestionRows>
+              <ColumnListItem id="colRamoListItem"><cells><Label id="LblRamoCodigo" text="{valueHelp>key}"/><Label id="LblRamoDescripcion" text="{valueHelp>text}"/></cells></ColumnListItem>
+            </suggestionRows>
+          </Input>
 
           <Label id="dpLblTipoEntrada" text="{i18n>lblTipoEntrada}"/>
-          <ComboBox
-            id="dpCbTipoEntrada"
-            selectedKey="{/header/tipoEntrada}"
-            items="{tipoEntradaCatalogo>/rows}"
-            editable="{= ${/header/estadoProceso} === 'Captura' }"
-            change=".onTipoEntradaChange"
-            width="60%">
-            <core:Item id="dpItemTipoEntrada" key="{tipoEntradaCatalogo>idTipoEntrada}" text="{tipoEntradaCatalogo>idTipoEntrada}"/>
-          </ComboBox>
-          <Text id="dpTxtDescTipoEntrada" text="{/header/tipoEntradaDesc}"/>                           
-
-          <!-- Regla de Negocio A (propuesta-3-dynamic-page.md): Folio visible solo si Tipo de
-               Entrada es DNP, EE o CA — calculado en onTipoEntradaChange sobre /ui/isFolioVisible. -->
-          <Label id="dpLblFolio" text="{i18n>lblFolio}" visible="{/ui/isFolioVisible}"/>
           <Input
-            id="dpInpFolio"
-            value="{/header/folio}"
-            visible="{/ui/isFolioVisible}"
-            editable="{= ${/header/estadoProceso} === 'Captura' }"/>
-
+            id="dpInpTipoEntrada"
+            value="{/header/tipoEntrada}"
+            description="{/header/tipoEntradaDesc}"
+            fieldWidth="35%"
+            showValueHelp="true"
+            valueHelpRequest=".onAyudaBusqueda"
+            showSuggestion="true"
+            filterSuggests="false"
+            suggest=".onSuggestFiltrar"
+            suggestionRows="{valueHelp>/tiposEntrada}"
+            suggestionItemSelected=".onAyudaSugerenciaSeleccionada"
+            change=".onAyudaCambio"
+            editable="{= ${/header/estadoProceso} === 'Captura' }">
+            <customData><core:CustomData key="campo" value="tipoEntrada"/></customData>
+            <suggestionColumns>
+              <Column id="colTipoEntradaCodigo" width="8rem"><header><Text id="txtTipoEntradaCodigo" text="{i18n>vhColCodigo}"/></header></Column>
+              <Column id="colTipoEntradaDescripcion"><header><Text id="txtTipoEntradaDescripcion" text="{i18n>vhColDescripcion}"/></header></Column>
+            </suggestionColumns>
+            <suggestionRows>
+              <ColumnListItem id="colTipoEntradaListItem"><cells><Label id="LblTipoEntradaCodigo" text="{valueHelp>key}"/><Label id="LblTipoEntradaDescripcion" text="{valueHelp>text}"/></cells></ColumnListItem>
+            </suggestionRows>
+          </Input>
+          
           <Label id="dpLblCentro" text="{i18n>lblCentro}"/>
-          <ComboBox
-            id="dpCbCentro"
-            selectedKey="{/header/centro}"
-            items="{valueHelp>/centros}"
-            editable="{= ${/header/estadoProceso} === 'Captura' }"
-            change=".onCentroChange">
-            <core:Item id="dpItemCentro" key="{valueHelp>key}" text="{valueHelp>text}"/>
-          </ComboBox>   
+          <Input
+            id="dpInpCentro"
+            value="{/header/centro}"
+            description="{/header/centroDesc}"
+            fieldWidth="35%"
+            showValueHelp="true"
+            valueHelpRequest=".onAyudaBusqueda"
+            showSuggestion="true"
+            filterSuggests="false"
+            suggest=".onSuggestFiltrar"
+            suggestionRows="{valueHelp>/centros}"
+            suggestionItemSelected=".onAyudaSugerenciaSeleccionada"
+            change=".onAyudaCambio"
+            editable="{= ${/header/estadoProceso} === 'Captura' }">
+            <customData><core:CustomData key="campo" value="centro"/></customData>
+            <suggestionColumns>
+              <Column id="colCentroCodigo" width="8rem"><header><Text id="txtCentroCodigo" text="{i18n>vhColCodigo}"/></header></Column>
+              <Column id="colCentroDescripcion"><header><Text id="txtCentroDescripcion" text="{i18n>vhColDescripcion}"/></header></Column>
+            </suggestionColumns>
+            <suggestionRows>
+              <ColumnListItem id="colCentroListItem"><cells><Label id="LblCentroCodigo" text="{valueHelp>key}"/><Label id="LblCentroDescripcion" text="{valueHelp>text}"/></cells></ColumnListItem>
+            </suggestionRows>
+          </Input>
 
           <Label id="dpLblOrgVentas" text="{i18n>lblOrgVentas}"/>
-          <ComboBox
-            id="dpCbOrgVentas"
-            selectedKey="{/header/orgVentas}"
-            items="{valueHelp>/orgVentas}"
-            editable="{= ${/header/estadoProceso} === 'Captura' }"
-            placeholder="Solo si aplica vista Ventas">
-            <core:Item id="dpItemOrgVentas" key="{valueHelp>key}" text="{valueHelp>text}"/>
-          </ComboBox>
+          <Input
+            id="dpInpOrgVentas"
+            value="{/header/orgVentas}"
+            description="{/header/orgVentasDesc}"
+            fieldWidth="35%"
+            placeholder="{i18n>phOrgVentas}"
+            showValueHelp="true"
+            valueHelpRequest=".onAyudaBusqueda"
+            showSuggestion="true"
+            filterSuggests="false"
+            suggest=".onSuggestFiltrar"
+            suggestionRows="{valueHelp>/orgVentas}"
+            suggestionItemSelected=".onAyudaSugerenciaSeleccionada"
+            change=".onAyudaCambio"
+            editable="{= ${/header/estadoProceso} === 'Captura' }">
+            <customData><core:CustomData key="campo" value="orgVentas"/></customData>
+            <suggestionColumns>
+              <Column id="colOrgVentasCodigo" width="8rem"><header><Text id="txtOrgVentasCodigo" text="{i18n>vhColCodigo}"/></header></Column>
+              <Column id="colOrgVentasDescripcion"><header><Text id="txtOrgVentasDescripcion" text="{i18n>vhColDescripcion}"/></header></Column>
+            </suggestionColumns>
+            <suggestionRows>
+              <ColumnListItem id="colOrgVentasListItem"><cells><Label id="LblOrgVentasCodigo" text="{valueHelp>key}"/><Label id="LblOrgVentasDescripcion" text="{valueHelp>text}"/></cells></ColumnListItem>
+            </suggestionRows>
+          </Input>
 
           <Label id="dpLblMaquilado" text="{i18n>lblMaterialMaquilado}"/>
           <CheckBox id="dpCbMaquilado" selected="{/header/materialMaquilado}" enabled="{= ${/header/estadoProceso} === 'Captura' }"/>
@@ -142,63 +204,120 @@
             change=".onDenominacionChange"/>
 
           <Label id="dpLblUmBase" text="{i18n>lblUmBase}"/>
-          <ComboBox
-            id="dpCbUmBase"
-            selectedKey="{/header/umBase}"
-            items="{valueHelp>/unidades}"
-            editable="{= ${/header/modoSolicitud} !== 'extension' &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
-            change=".onDatosBasicosChange">
-            <core:Item id="dpItemUmBase" key="{valueHelp>key}" text="{valueHelp>text}"/>
-          </ComboBox>
+          <Input
+            id="dpInpUmBase"
+            value="{/header/umBase}"
+            description="{/header/umBaseDesc}"
+            fieldWidth="35%"
+            showValueHelp="true"
+            valueHelpRequest=".onAyudaBusqueda"
+            showSuggestion="true"
+            filterSuggests="false"
+            suggest=".onSuggestFiltrar"
+            suggestionRows="{valueHelp>/unidades}"
+            suggestionItemSelected=".onAyudaSugerenciaSeleccionada"
+            change=".onAyudaCambio"
+            editable="{= ${/header/modoSolicitud} !== 'extension' &amp;&amp; ${/header/estadoProceso} === 'Captura' }">
+            <customData><core:CustomData key="campo" value="umBase"/></customData>
+            <suggestionColumns>
+              <Column id="colUmBaseCodigo" width="8rem"><header><Text id="txtUmBaseCodigo" text="{i18n>vhColCodigo}"/></header></Column>
+              <Column id="colUmBaseDescripcion"><header><Text id="txtUmBaseDescripcion" text="{i18n>vhColDescripcion}"/></header></Column>
+            </suggestionColumns>
+            <suggestionRows>
+              <ColumnListItem id="colUmBaseListItem"><cells><Label id="LblUmBaseCodigo" text="{valueHelp>key}"/><Label id="LblUmBaseDescripcion" text="{valueHelp>text}"/></cells></ColumnListItem>
+            </suggestionRows>
+          </Input>
 
           <Label id="dpLblSector" text="{i18n>lblSector}"/>
-          <ComboBox
-            id="dpCbSector"
-            selectedKey="{/header/sector}"
-            items="{valueHelp>/sectores}"
-            editable="{= ${/header/modoSolicitud} !== 'extension' &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
-            change=".onDatosBasicosChange">
-            <core:Item id="dpItemSector" key="{valueHelp>key}" text="{valueHelp>text}"/>
-          </ComboBox>
+          <Input
+            id="dpInpSector"
+            value="{/header/sector}"
+            description="{/header/sectorDesc}"
+            fieldWidth="35%"
+            showValueHelp="true"
+            valueHelpRequest=".onAyudaBusqueda"
+            showSuggestion="true"
+            filterSuggests="false"
+            suggest=".onSuggestFiltrar"
+            suggestionRows="{valueHelp>/sectores}"
+            suggestionItemSelected=".onAyudaSugerenciaSeleccionada"
+            change=".onAyudaCambio"
+            editable="{= ${/header/modoSolicitud} !== 'extension' &amp;&amp; ${/header/estadoProceso} === 'Captura' }">
+            <customData><core:CustomData key="campo" value="sector"/></customData>
+            <suggestionColumns>
+              <Column id="colSectorCodigo" width="8rem"><header><Text id="txtSectorCodigo" text="{i18n>vhColCodigo}"/></header></Column>
+              <Column id="colSectorDescripcion"><header><Text id="txtSectorDescripcion" text="{i18n>vhColDescripcion}"/></header></Column>
+            </suggestionColumns>
+            <suggestionRows>
+              <ColumnListItem id="colSectorListItem"><cells><Label id="LblSectorCodigo" text="{valueHelp>key}"/><Label id="LblSectorDescripcion" text="{valueHelp>text}"/></cells></ColumnListItem>
+            </suggestionRows>
+          </Input>
 
           <Label id="dpLblGrupoTipoPosGral" text="{i18n>lblGrupoTipoPosGral}"/>
-          <ComboBox
-            id="dpCbGrupoTipoPosGral"
-            selectedKey="{/header/grupoTipoPosGral}"
-            items="{valueHelp>/gruposTipoPosGral}"
-            editable="{= ${/header/modoSolicitud} !== 'extension' &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
-            change=".onDatosBasicosChange">
-            <core:Item id="dpItemGrupoTipoPosGral" key="{valueHelp>key}" text="{valueHelp>text}"/>
-          </ComboBox>
+          <Input
+            id="dpInpGrupoTipoPosGral"
+            value="{/header/grupoTipoPosGral}"
+            description="{/header/grupoTipoPosGralDesc}"
+            fieldWidth="35%"
+            showValueHelp="true"
+            valueHelpRequest=".onAyudaBusqueda"
+            showSuggestion="true"
+            filterSuggests="false"
+            suggest=".onSuggestFiltrar"
+            suggestionRows="{valueHelp>/gruposTipoPosGral}"
+            suggestionItemSelected=".onAyudaSugerenciaSeleccionada"
+            change=".onAyudaCambio"
+            editable="{= ${/header/modoSolicitud} !== 'extension' &amp;&amp; ${/header/estadoProceso} === 'Captura' }">
+            <customData><core:CustomData key="campo" value="grupoTipoPosGral"/></customData>
+            <suggestionColumns>
+              <Column id="colGrupoTipoPosGralCodigo" width="8rem"><header><Text id="txtGrupoTipoPosGralCodigo" text="{i18n>vhColCodigo}"/></header></Column>
+              <Column id="colGrupoTipoPosGralDescripcion"><header><Text id="txtGrupoTipoPosGralDescripcion" text="{i18n>vhColDescripcion}"/></header></Column>
+            </suggestionColumns>
+            <suggestionRows>
+              <ColumnListItem id="colGrupoTipoPosGralListItem"><cells><Label id="LblGrupoTipoPosGralCodigo" text="{valueHelp>key}"/><Label id="LblGrupoTipoPosGralDescripcion" text="{valueHelp>text}"/></cells></ColumnListItem>
+            </suggestionRows>
+          </Input>
 
           <Label id="dpLblGrupoArticulos" text="{i18n>lblGrupoArticulos}"/>
-          <ComboBox
-            id="dpCbGrupoArticulos"
-            selectedKey="{/header/grupoArticulos}"
-            items="{valueHelp>/gruposArticulos}"
-            editable="{= ${/header/modoSolicitud} !== 'extension' &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
-            change=".onDatosBasicosChange">
-            <core:Item id="dpItemGrupoArticulos" key="{valueHelp>key}" text="{valueHelp>text}"/>
-          </ComboBox>
+          <Input
+            id="dpInpGrupoArticulos"
+            value="{/header/grupoArticulos}"
+            description="{/header/grupoArticulosDesc}"
+            fieldWidth="35%"
+            showValueHelp="true"
+            valueHelpRequest=".onAyudaBusqueda"
+            showSuggestion="true"
+            filterSuggests="false"
+            suggest=".onSuggestFiltrar"
+            suggestionRows="{valueHelp>/gruposArticulos}"
+            suggestionItemSelected=".onAyudaSugerenciaSeleccionada"
+            change=".onAyudaCambio"
+            editable="{= ${/header/modoSolicitud} !== 'extension' &amp;&amp; ${/header/estadoProceso} === 'Captura' }">
+            <customData><core:CustomData key="campo" value="grupoArticulos"/></customData>
+            <suggestionColumns>
+              <Column id="colGrupoArticulosCodigo" width="8rem"><header><Text id="txtGrupoArticulosCodigo" text="{i18n>vhColCodigo}"/></header></Column>
+              <Column id="colGrupoArticulosDescripcion"><header><Text id="txtGrupoArticulosDescripcion" text="{i18n>vhColDescripcion}"/></header></Column>
+            </suggestionColumns>
+            <suggestionRows>
+              <ColumnListItem id="colGrupoArticulosListItem"><cells><Label id="LblGrupoArticulosCodigo" text="{valueHelp>key}"/><Label id="LblGrupoArticulosDescripcion" text="{valueHelp>text}"/></cells></ColumnListItem>
+            </suggestionRows>
+          </Input>
 
           <Label id="dpLblJerarquia" text="{i18n>lblJerarquiaProductos}"/>
           <Input
             id="dpInpJerarquia"
             value="{/header/jerarquiaProductos}"
             editable="{= ${/header/modoSolicitud} !== 'extension' &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
-            placeholder="{= ${/header/tipoMaterial} === 'FERT' ? 'Obligatorio para FERT' : '' }"
+            placeholder="{= ${/header/tipoMaterial} === 'FERT' ? ${i18n>phJerarquiaFert} : '' }"
             change=".onDatosBasicosChange"/>
-        </form:SimpleForm>
+        </form:SimpleForm>        
 
-        <!-- Sección de Pestañas Informativas — orden ajustado tras prueba de usuario: "Vistas a
-             Crear" va primero (es la pestaña accionable, donde se marcan checkboxes antes de
-             "Agregar al Listado"); las demás son informativas de solo lectura. Documentado en
-             propuesta-3-dynamic-page.md como refinamiento sobre el orden original del documento. -->
         <IconTabBar id="dpTabsVistas" expandable="false" visible="{= ${/header/estadoProceso} !== 'Captura' }" class="sapUiResponsiveContentPadding">
           <items>
             <IconTabFilter id="dpTabVistasACrear" text="{i18n>tabVistasACrear}" key="crear" count="{= ${/vistasCrear}.length }">
-              <Table id="dpTblVistasACrear" items="{/vistasCrear}" mode="None" noDataText="No hay vistas configuradas (Objeto Custom 1) para este Centro/Tipo Material/Material de Exportación.">
+              <Table id="dpTblVistasACrear" items="{/vistasCrear}" mode="None" noDataText="{i18n>noDataVistasACrear}">
                 <columns>
+                  <Column id="dpColSec" width="4rem"><Text id="dpTxtColSec" text="{i18n>colSecuencia}"/></Column>
                   <Column id="dpColVista"><Text id="dpTxtColVista" text="{i18n>colVista}"/></Column>
                   <Column id="dpColDescVista"><Text id="dpTxtColDescVista" text="{i18n>colDescripcionVista}"/></Column>
                   <Column id="dpColUsuario"><Text id="dpTxtColUsuario" text="{i18n>colUsuario}"/></Column>
@@ -209,6 +328,7 @@
                 <items>
                   <ColumnListItem id="dpCliVista">
                     <cells>
+                      <Text id="dpTxtSec" text="{= ${secuencia} === 99 ? '—' : ${secuencia} }"/>
                       <Text id="dpTxtVista" text="{vista}"/>
                       <Text id="dpTxtDescVista" text="{descripcionVista}"/>
                       <Text id="dpTxtUsuario" text="{usuarioResponsable}"/>
@@ -222,7 +342,7 @@
             </IconTabFilter>
 
             <IconTabFilter id="dpTabVistasCreadas" text="{i18n>tabVistasCreadas}" key="creadas" count="{path:'/vistasCrear', formatter:'.formatter.contarCreadas'}">
-              <Table id="dpTblVistasCreadas" items="{path:'/vistasCrear', filters:[{path:'creada',operator:'EQ',value1:true}]}" mode="None" noDataText="Sin vistas creadas (MARC-PSTAT).">
+              <Table id="dpTblVistasCreadas" items="{path:'/vistasCrear', filters:[{path:'creada',operator:'EQ',value1:true}]}" mode="None" noDataText="{i18n>noDataVistasCreadas}">
                 <columns>
                   <Column id="dpColCreadasVista"><Text id="dpTxtColCreadasVista" text="{i18n>colVista}"/></Column>
                   <Column id="dpColCreadasDesc"><Text id="dpTxtColCreadasDesc" text="{i18n>colDescripcionVista}"/></Column>
@@ -239,7 +359,7 @@
             </IconTabFilter>
 
             <IconTabFilter id="dpTabVistasEnWF" text="{i18n>tabVistasEnWF}" key="enwf" count="{path:'/vistasCrear', formatter:'.formatter.contarEnWF'}">
-              <Table id="dpTblVistasEnWF" items="{path:'/vistasCrear', filters:[{path:'enWF',operator:'EQ',value1:true}]}" mode="None" noDataText="Sin tareas pendientes (SWWWIHEAD/SWWUSERWI).">
+              <Table id="dpTblVistasEnWF" items="{path:'/vistasCrear', filters:[{path:'enWF',operator:'EQ',value1:true}]}" mode="None" noDataText="{i18n>noDataVistasEnWF}">
                 <columns>
                   <Column id="dpColEnWFTitulo"><Text id="dpTxtColEnWFTitulo" text="{i18n>colTitulo}"/></Column>
                   <Column id="dpColEnWFFecha"><Text id="dpTxtColEnWFFecha" text="{i18n>colFechaCreacion}"/></Column>
@@ -258,7 +378,7 @@
             </IconTabFilter>
 
             <IconTabFilter id="dpTabVistasVenta" text="{i18n>tabVistasDeVentas}" key="ventas" count="{= ${/vistasVenta}.length }">
-              <Table id="dpTblVistasVenta" items="{/vistasVenta}" mode="None" noDataText="Sin vistas de venta existentes (simula consulta MVKE).">
+              <Table id="dpTblVistasVenta" items="{/vistasVenta}" mode="None" noDataText="{i18n>noDataVistasVenta}">
                 <columns>
                   <Column id="dpColVentaMaterial"><Text id="dpTxtColVentaMaterial" text="{i18n>colMaterial}"/></Column>
                   <Column id="dpColVentaOrg"><Text id="dpTxtColVentaOrg" text="{i18n>colOrgVenta}"/></Column>
@@ -277,7 +397,7 @@
             </IconTabFilter>
 
             <IconTabFilter id="dpTabCanalesConf" text="{i18n>tabCanalesDistConf}" key="canales" count="{= ${/canalesConf}.length }">
-              <Table id="dpTblCanalesConf" items="{/canalesConf}" mode="None" noDataText="Sin canales configurados (Objeto Custom 2).">
+              <Table id="dpTblCanalesConf" items="{/canalesConf}" mode="None" noDataText="{i18n>noDataCanales}">
                 <columns>
                   <Column id="dpColCanalConfOrg"><Text id="dpTxtColCanalConfOrg" text="{i18n>colOrgVenta}"/></Column>
                   <Column id="dpColCanalConf"><Text id="dpTxtColCanalConf" text="{i18n>colCanalDist}"/></Column>
@@ -319,7 +439,7 @@
             press=".onModificarDatos"/>
           <Button
             id="dpBtnAgregarListado"
-            text="{i18n>fclBtnAgregarListado}"
+            text="{i18n>btnAgregarListado}"
             type="Emphasized"
             visible="{= ${/header/estadoProceso} === 'Confirmado' }"
             press=".onAgregarAlListado"/>
@@ -331,7 +451,7 @@
             id="dpGridSolicitudes"
             items="{/grid}"
             mode="None"
-            noDataText="Aún no ha agregado ningún registro.">
+            noDataText="{i18n>noDataGrid}">
             <columns>
               <Column id="dpColGridMaterial" minScreenWidth="Tablet" demandPopin="true"><Text id="dpTxtGridMaterial" text="{i18n>colMaterial}"/></Column>
               <Column id="dpColGridDesc" minScreenWidth="Tablet" demandPopin="true"><Text id="dpTxtGridDesc" text="{i18n>colDescripcion}"/></Column>
@@ -347,6 +467,8 @@
               <Column id="dpColGridOrgVentas" minScreenWidth="Desktop" demandPopin="true"><Text id="dpTxtGridOrgVentas" text="{i18n>colOrgVentasGrid}"/></Column>
               <Column id="dpColGridJquiaProd" minScreenWidth="Desktop" demandPopin="true"><Text id="dpTxtGridJquiaProd" text="{i18n>colJquiaProd}"/></Column>
               <Column id="dpColGridVistas"><Text id="dpTxtGridVistas" text="{i18n>colVistasACrear}"/></Column>
+              <Column id="dpColGridEstado" minScreenWidth="Tablet" demandPopin="true"><Text id="dpTxtGridEstado" text="{i18n>colEstado}"/></Column>
+              <Column id="dpColGridMensaje" minScreenWidth="Desktop" demandPopin="true"><Text id="dpTxtGridMensaje" text="{i18n>colMensaje}"/></Column>
               <Column id="dpColGridAcciones" hAlign="Center"><Text id="dpTxtGridAcciones" text=""/></Column>
             </columns>
             <items>
@@ -357,7 +479,7 @@
                   <Text id="dpTxtCellCentro" text="{centro}"/>
                   <core:Icon id="dpIconCellMatMaq" src="{= ${materialMaquilado} ? 'sap-icon://accept' : 'sap-icon://less'}"/>
                   <core:Icon id="dpIconCellCLt" src="{= ${conListaMateriales} ? 'sap-icon://accept' : 'sap-icon://less'}"/>
-                  <Text id="dpTxtCellTipoFabDis" text="{path:'modoProceso', formatter:'.formatter.modoProcesoTexto'}"/>
+                  <Text id="dpTxtCellTipoFabDis" text="{= ${modoProceso} === 'M' ? ${i18n>lblFabricacion} : ${i18n>lblDistribucion} }"/>
                   <Text id="dpTxtCellRamo" text="{ramo}"/>
                   <Text id="dpTxtCellUm" text="{umBase}"/>
                   <Text id="dpTxtCellSector" text="{sector}"/>
@@ -366,6 +488,11 @@
                   <Text id="dpTxtCellOrgVentas" text="{orgVentas}"/>
                   <Text id="dpTxtCellJquiaProd" text="{jerarquiaProductos}"/>
                   <Text id="dpTxtCellVistas" text="{vistasACrear}"/>
+                  <ObjectStatus id="dpStatusCellEstado"
+                                text="{= ${estado} === 'S' ? ${i18n>estadoEnviado} : ${estado} === 'W' ? ${i18n>estadoParcial} : ${estado} === 'E' ? ${i18n>estadoError} : ${i18n>estadoPendiente} }"
+                                state="{= ${estado} === 'S' ? 'Success' : ${estado} === 'W' ? 'Warning' : ${estado} === 'E' ? 'Error' : 'None' }"/>
+                  <Text id="dpTxtCellMensaje" text="{mensaje}"/>
+                  <Button id="dpBtnStEliminarFila" icon="sap-icon://delete" type="Transparent" enabled="{= ${estado} === 'pendiente' || ${estado} === 'E' }" press=".onEliminarGridRow"/>
                   <Button id="dpBtnEliminarFila" icon="sap-icon://delete" type="Transparent" press=".onEliminarGridRow"/>
                 </cells>
               </ColumnListItem>

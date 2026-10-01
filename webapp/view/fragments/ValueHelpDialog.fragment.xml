@@ -1,0 +1,21 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+  <TableSelectDialog
+    id="vhDialog"
+    title="{vhDialog>/titulo}"
+    noDataText="{i18n>vhSinResultados}"
+    contentWidth="40rem"
+    items="{vhDialog>/items}"
+    search=".onValueHelpSearch"
+    confirm=".onValueHelpConfirm">
+    <columns>
+      <Column id="Code" width="8rem"><header><Text id="textCodigo" text="{i18n>vhColCodigo}"/></header></Column>
+      <Column id="Description"><header><Text id="textDescripcion" text="{i18n>vhColDescripcion}"/></header></Column>
+    </columns>
+    <ColumnListItem id="IdColumnListItem">
+      <cells>
+        <Text id="IDKey" text="{vhDialog>key}"/>
+        <Text id="IDText" text="{vhDialog>text}"/>
+      </cells>
+    </ColumnListItem>
+  </TableSelectDialog>
+</core:FragmentDefinition>

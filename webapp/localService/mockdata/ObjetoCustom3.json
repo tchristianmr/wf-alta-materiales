@@ -1,8 +1,0 @@
-{
-  "_comment": "DUMMY — Objeto Custom 3: Catálogo de Tipos de Entrada. Descripciones tomadas literalmente de los ejemplos del MD (DNP=Nuevos productos, EE=Empaques especiales, CA=Cambio de arte).",
-  "rows": [
-    { "idTipoEntrada": "DNP", "descripcion": "Desarrollo Nuevos Productos" },
-    { "idTipoEntrada": "EE", "descripcion": "Empaques Especiales" },
-    { "idTipoEntrada": "CA", "descripcion": "Cambio de Arte" }
-  ]
-}
