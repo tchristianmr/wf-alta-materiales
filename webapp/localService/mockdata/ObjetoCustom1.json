@@ -36,6 +36,15 @@
       "usuarioResponsable2": "EXTMANCH"
     },
     {
+      "centro": "0101",
+      "tipoMaterial": "FERT",
+      "vista": "C",
+      "materialExportacion": true,
+      "descripcionVista": "Clasificación",
+      "usuarioResponsable1": "EXTJUAMJ",
+      "usuarioResponsable2": "EXTMANCH"
+    },
+    {
       "centro": "1010",
       "tipoMaterial": "FERT",
       "vista": "K",

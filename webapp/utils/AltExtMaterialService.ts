@@ -171,7 +171,7 @@ export default class AltExtMaterialService {
       `${AltExtMaterialService.NAMESPACE}.${sActionName}(...)`,
       oParentContext,
       { $$groupId: "$direct" }
-    ) as ODataContextBinding;
+    );
     for (const [sName, vValue] of Object.entries(mParameters)) {
       oBinding.setParameter(sName, vValue);
     }

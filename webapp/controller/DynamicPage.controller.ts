@@ -736,7 +736,14 @@ export default class DynamicPage extends Controller {
 
     const bError = aResultados.some((r) => r.id !== "S" && r.id !== "W");
     const bSinWf = aResultados.some((r) => r.id === "W");
-    oFila.estado = bError ? "E" : bSinWf ? "W" : "S";
+
+    if (bError) { 
+      oFila.estado = "E";
+    } else if (bSinWf) {
+      oFila.estado = "W";
+    } else {
+      oFila.estado = "S";
+    }
 
     const sMaterial = aResultados.find((r) => r.material)?.material ?? "";
     if (oFila.estado !== "E" && sMaterial) {
@@ -758,7 +765,7 @@ export default class DynamicPage extends Controller {
       title: oBundle.getText("dpMsgCancelarTitulo"),
       actions: [MessageBox.Action.YES, MessageBox.Action.NO],
       onClose: (sAction: string) => {
-        if (sAction !== MessageBox.Action.YES) {
+        if (sAction !== String(MessageBox.Action.YES)) {
           return;
         }
         const oModel = this.getModel();
