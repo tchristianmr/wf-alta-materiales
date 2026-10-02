@@ -43,15 +43,17 @@
         <form:SimpleForm id="dpFormGenerales" editable="true" layout="ResponsiveGridLayout">
           <core:Title id="dpTitleGenerales" text="{i18n>stepDatosGenerales}"/>
 
-          <Label id="dpLblMaterial" text="{i18n>lblMaterial}"/>
+          <Label id="dpLblMaterial" text="{i18n>lblMaterial}" required="{= ${/header/modoSolicitud} === 'extension' || ${/ui/rangoNumeracion} === 'Externo' }"/>
           <Input
             id="dpInpMaterial"
             value="{/header/material}"
             editable="{= ${/header/estadoProceso} === 'Captura' &amp;&amp; (${/header/modoSolicitud} === 'extension' || ${/ui/rangoNumeracion} !== 'Interno') }"
             placeholder="{= ${/ui/rangoNumeracion} === 'Interno' &amp;&amp; ${/header/modoSolicitud} === 'creacion' ? ${i18n>phMaterialInterno} : ${i18n>phMaterialNumero} }"
-            change=".onMaterialChange"/>
+            change=".onMaterialChange"
+            busy="{/ui/materialBuscando}"
+            busyIndicatorDelay="300"/>
 
-          <Label id="dpLblTipoMaterial" text="{i18n>lblTipoMaterial}"/>
+          <Label id="dpLblTipoMaterial" text="{i18n>lblTipoMaterial}" required="true"/>
           <Input
             id="dpInpTipoMaterial"
             value="{/header/tipoMaterial}"
@@ -76,7 +78,7 @@
             </suggestionRows>
           </Input>
 
-          <Label id="dpLblRamo" text="{i18n>lblRamo}"/>
+          <Label id="dpLblRamo" text="{i18n>lblRamo}" required="true"/>
           <Input
             id="dpInpRamo"
             value="{/header/ramo}"
@@ -101,7 +103,7 @@
             </suggestionRows>
           </Input>
 
-          <Label id="dpLblTipoEntrada" text="{i18n>lblTipoEntrada}"/>
+          <Label id="dpLblTipoEntrada" text="{i18n>lblTipoEntrada}" required="true"/>
           <Input
             id="dpInpTipoEntrada"
             value="{/header/tipoEntrada}"
@@ -126,7 +128,7 @@
             </suggestionRows>
           </Input>
           
-          <Label id="dpLblCentro" text="{i18n>lblCentro}"/>
+          <Label id="dpLblCentro" text="{i18n>lblCentro}" required="true"/>
           <Input
             id="dpInpCentro"
             value="{/header/centro}"
@@ -196,14 +198,14 @@
 
           <core:Title id="dpTitleBasicos" text="{i18n>stepDatosBasicos}"/>
 
-          <Label id="dpLblDenomEs" text="{i18n>lblDenominacionEs}"/>
+          <Label id="dpLblDenomEs" text="{i18n>lblDenominacionEs}" required="true"/>
           <Input
             id="dpInpDenomEs"
             value="{/header/descripcionEs}"
             editable="{= ${/header/modoSolicitud} !== 'extension' &amp;&amp; ${/header/estadoProceso} === 'Captura' }"
             change=".onDenominacionChange"/>
 
-          <Label id="dpLblUmBase" text="{i18n>lblUmBase}"/>
+          <Label id="dpLblUmBase" text="{i18n>lblUmBase}" required="true"/>
           <Input
             id="dpInpUmBase"
             value="{/header/umBase}"
@@ -303,7 +305,7 @@
             </suggestionRows>
           </Input>
 
-          <Label id="dpLblJerarquia" text="{i18n>lblJerarquiaProductos}"/>
+          <Label id="dpLblJerarquia" text="{i18n>lblJerarquiaProductos}" required="{= ${/header/tipoMaterial} === 'FERT' }"/>
           <Input
             id="dpInpJerarquia"
             value="{/header/jerarquiaProductos}"
@@ -417,6 +419,14 @@
 
         <!-- Barra de Acciones Intermedia -->
         <OverflowToolbar id="dpToolbarIntermedia" class="sapUiSmallMarginTop sapUiSmallMarginBottom">
+           <Text id="dpTxtFaltantes"
+                 text="{/ui/faltantesTexto}"
+                 wrapping="false"
+                 visible="{= ${/header/estadoProceso} === 'Captura' &amp;&amp; !${/ui/formValidated} &amp;&amp; !!${/ui/faltantesTexto} }">
+            <layoutData>
+              <OverflowToolbarLayoutData id="IDGenOverflowToolbarLayoutData" priority="Disappear" shrinkable="true"/>
+            </layoutData>
+          </Text>
           <ToolbarSpacer id="dpToolbarIntermediaSpacer"/>
           <Button
             id="dpBtnLimpiar"
@@ -430,6 +440,7 @@
             type="Emphasized"
             visible="{= ${/header/estadoProceso} === 'Captura' }"
             enabled="{/ui/formValidated}"
+            tooltip="{/ui/faltantesTexto}"
             press=".onConfirmarDatos"/>
           <Button
             id="dpBtnModificarDatos"
@@ -468,7 +479,7 @@
               <Column id="dpColGridJquiaProd" minScreenWidth="Desktop" demandPopin="true"><Text id="dpTxtGridJquiaProd" text="{i18n>colJquiaProd}"/></Column>
               <Column id="dpColGridVistas"><Text id="dpTxtGridVistas" text="{i18n>colVistasACrear}"/></Column>
               <Column id="dpColGridEstado" minScreenWidth="Tablet" demandPopin="true"><Text id="dpTxtGridEstado" text="{i18n>colEstado}"/></Column>
-              <Column id="dpColGridMensaje" minScreenWidth="Desktop" demandPopin="true"><Text id="dpTxtGridMensaje" text="{i18n>colMensaje}"/></Column>
+              <Column id="dpColGridMensaje" width="4rem" hAlign="Center" minScreenWidth="Desktop" demandPopin="true"><Text id="dpTxtGridMensaje" text="{i18n>colMensaje}"/></Column>
               <Column id="dpColGridAcciones" hAlign="Center"><Text id="dpTxtGridAcciones" text=""/></Column>
             </columns>
             <items>
@@ -491,9 +502,14 @@
                   <ObjectStatus id="dpStatusCellEstado"
                                 text="{= ${estado} === 'S' ? ${i18n>estadoEnviado} : ${estado} === 'W' ? ${i18n>estadoParcial} : ${estado} === 'E' ? ${i18n>estadoError} : ${i18n>estadoPendiente} }"
                                 state="{= ${estado} === 'S' ? 'Success' : ${estado} === 'W' ? 'Warning' : ${estado} === 'E' ? 'Error' : 'None' }"/>
-                  <Text id="dpTxtCellMensaje" text="{mensaje}"/>
+                  <core:Icon id="dpIconCellMensaje"
+                            src="{= ${estado} === 'E' ? 'sap-icon://message-error' : ${estado} === 'W' ? 'sap-icon://message-warning' : 'sap-icon://message-information' }"
+                            color="{= ${estado} === 'E' ? '#BB0000' : ${estado} === 'W' ? '#E9730C' : '#107E3E' }"
+                            tooltip="{i18n>ttVerMensaje}"
+                            decorative="false"
+                            visible="{= !!${mensaje} }"
+                            press=".onVerMensaje"/>
                   <Button id="dpBtnStEliminarFila" icon="sap-icon://delete" type="Transparent" enabled="{= ${estado} === 'pendiente' || ${estado} === 'E' }" press=".onEliminarGridRow"/>
-                  <Button id="dpBtnEliminarFila" icon="sap-icon://delete" type="Transparent" press=".onEliminarGridRow"/>
                 </cells>
               </ColumnListItem>
             </items>

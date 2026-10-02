@@ -1,0 +1,11 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+  <Popover id="popMensajeFila" title="{i18n>titMensajeFila}" placement="Auto" contentWidth="26rem">
+    <VBox id="IDGenVBox" class="sapUiSmallMargin">
+      <ObjectStatus id="popStatusFila"
+                    text="{= ${estado} === 'S' ? ${i18n>estadoEnviado} : ${estado} === 'W' ? ${i18n>estadoParcial} : ${estado} === 'E' ? ${i18n>estadoError} : ${i18n>estadoPendiente} }"
+                    state="{= ${estado} === 'S' ? 'Success' : ${estado} === 'W' ? 'Warning' : ${estado} === 'E' ? 'Error' : 'None' }"
+                    class="sapUiTinyMarginBottom"/>
+      <Text id="popTextoMensajeFila" text="{mensaje}"/>
+    </VBox>
+  </Popover>
+</core:FragmentDefinition>

@@ -57,7 +57,7 @@ export default class VistasManager {
     // 4) Cada vista solicitada debe tener responsable resuelto.
     const aSinResponsable = aSeleccionadas.filter((v) => !v.usuarioResponsable).map((v) => v.vista);
     if (aSinResponsable.length > 0) {
-      return { valido: false, claveMensaje: "msgSinResponsable", argsMensaje: [aSinResponsable.join(", ")] };
+      return { valido: false, claveMensaje: "msgSinResponsable", argsMensaje: [aSinResponsable.join(", "), oContexto.centro, oContexto.tipoMaterial, oContexto.exportacionTexto, oContexto.modoTexto] };
     }
 
     // 5) No permitir vistas ya creadas ni ya en Workflow.

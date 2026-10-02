@@ -16,6 +16,7 @@ import Filter from "sap/ui/model/Filter";
 import FilterOperator from "sap/ui/model/FilterOperator";
 import type ListBinding from "sap/ui/model/ListBinding";
 import type TableSelectDialog from "sap/m/TableSelectDialog";
+import type Popover from "sap/m/Popover";
 import type { TableSelectDialog$SearchEvent, TableSelectDialog$ConfirmEvent } from "sap/m/TableSelectDialog";
 import type { Input$SuggestEvent, Input$SuggestionItemSelectedEvent } from "sap/m/Input";
 import formatter from "../model/formatter";
@@ -26,7 +27,6 @@ import type {
   VistasConfig,
   ModoSolicitud,
   ContextoValidacionAgregar,
-  ResponsableVistaConfig,
   TipoMaterialRangoConfig,
   ResultGrid,
   MaterialHeader,
@@ -43,10 +43,9 @@ export default class DynamicPage extends Controller {
 
   /** Instanciado en onInit contra el modelo OData v4 "altextmaterial" (manifest.json). */
   private oMaterialService!: AltExtMaterialService;
-
   private oValueHelpDialog?: TableSelectDialog;
+  private oMensajePopover?: Popover;
   private fnValueHelpSeleccion?: (sKey: string, sText: string) => void;
-
   private sTipoMaterialPrevio = "";
   private sCentroPrevio = "";
 
@@ -153,10 +152,6 @@ export default class DynamicPage extends Controller {
     return this.getView()!.getModel() as JSONModel;
   }
 
-  private getConfigRows<T>(sModelName: string): T[] {
-    return ((this.getView()!.getModel(sModelName) as JSONModel).getProperty("/rows") as T[]) || [];
-  }
-
   private getVistasManager(): VistasManager {
     return new VistasManager((this.getView()!.getModel("valueHelp") as JSONModel).getProperty("/rangos") as TipoMaterialRangoConfig[]);
   }
@@ -173,11 +168,25 @@ export default class DynamicPage extends Controller {
   }
 
   // --- Captura activa: Datos Generales + Datos Básicos ------------------------------------------
+  /** Vacía la captura activa conservando el modo elegido; no toca el grid de staging. */
+  private limpiarCaptura(): void {
+    const oModel = this.getModel();
+    const sModo = oModel.getProperty("/header/modoSolicitud") as ModoSolicitud;
+    oModel.setProperty("/header", createMaterialHeaderDraft(sModo));
 
-   public async onModoSolicitudChange(_oEvent: Event): Promise<void> {
-    this.getModel().setProperty("/ui/materialExiste", undefined); 
+    this.sTipoMaterialPrevio = "";
+    this.limpiarCentroYOrg();
+
+    oModel.setProperty("/ui/formValidated", false);
+    oModel.setProperty("/ui/rangoNumeracion", undefined);
+    oModel.setProperty("/ui/materialExiste", undefined);
     this.clearStrip();
-    await this.onMaterialChange(); 
+    this.recalcFormValidated();
+  }
+
+  /** Cambio de modo (Creación/Extensión): el binding ya actualizó el modo; se descarta lo capturado en el modo anterior. */
+  public onModoSolicitudChange(_oEvent: Event): void {
+    this.limpiarCaptura();
   }
 
   /** Fase 1 — IM_OrgVtaByMtart. Vacío es negocio normal: este Centro+TipoMaterial no tiene vista Ventas configurada. */
@@ -372,6 +381,7 @@ export default class DynamicPage extends Controller {
 
     if (oHeader.modoSolicitud === "extension" && oHeader.material) {
       oModel.setProperty("/ui/formValidated", false);
+      oModel.setProperty("/ui/materialBuscando", true);
       try {
         const oEntry = AltExtMaterialService.mapHeaderToEntryParameters(oHeader, "", "");
         const oResult: RMaterialRAP = await this.oMaterialService.extenderMaterial([oEntry]);
@@ -401,8 +411,11 @@ export default class DynamicPage extends Controller {
       } catch (oError) {
         this.showStrip(this.texto("msgErrConfirmar"), "Error");
         return;
+      } finally {
+        oModel.setProperty("/ui/materialBuscando", false);
       }
     }
+
     this.recalcFormValidated();
   }
 
@@ -421,6 +434,9 @@ export default class DynamicPage extends Controller {
     const oModel = this.getModel();
     const oHeader = oModel.getProperty("/header") as MaterialHeader;
     const sRango = oModel.getProperty("/ui/rangoNumeracion") as string | undefined;
+    const aFaltantes = this.calcularFaltantes(oHeader, sRango);
+
+    oModel.setProperty("/ui/faltantesTexto", aFaltantes.length > 0 ? this.texto("msgFaltanCampos", [aFaltantes.join(", ")]) : "");
 
     if (oHeader.modoSolicitud === "extension") {
       if (!oHeader.material) {
@@ -458,26 +474,43 @@ export default class DynamicPage extends Controller {
       }
     }
 
-    const bJerarquiaOk = oHeader.tipoMaterial !== "FERT" || !!oHeader.jerarquiaProductos;
-    const bBasicosOk = !!oHeader.descripcionEs && !!oHeader.umBase && bJerarquiaOk;
-
     this.clearStrip();
-    oModel.setProperty("/ui/formValidated", bBasicosOk);
+    oModel.setProperty("/ui/formValidated", aFaltantes.length === 0);
+  }
+
+  /** Campos obligatorios que faltan para habilitar "Confirmar Datos" (mismas reglas que los asteriscos de la vista). */
+  private calcularFaltantes(oHeader: MaterialHeader, sRango: string | undefined): string[] {
+    const aClaves: string[] = [];
+    if ((oHeader.modoSolicitud === "extension" || sRango === "Externo") && !oHeader.material) {
+      aClaves.push("lblMaterial");
+    }
+    if (!oHeader.tipoMaterial) {
+      aClaves.push("lblTipoMaterial");
+    }
+    if (!oHeader.ramo) {
+      aClaves.push("lblRamo");
+    }
+    if (!oHeader.tipoEntrada) {
+      aClaves.push("lblTipoEntrada");
+    }
+    if (!oHeader.centro) {
+      aClaves.push("lblCentro");
+    }
+    if (!oHeader.descripcionEs) {
+      aClaves.push("lblDenominacionEs");
+    }
+    if (!oHeader.umBase) {
+      aClaves.push("lblUmBase");
+    }
+    if (oHeader.tipoMaterial === "FERT" && !oHeader.jerarquiaProductos) {
+      aClaves.push("lblJerarquiaProductos");
+    }
+    return aClaves.map((sClave) => this.texto(sClave));
   }
 
   /** Botón "Limpiar" — resetea solo la captura activa (no toca el grid de staging). */
   public onLimpiar(_oEvent: Button$PressEvent): void {
-    const oModel = this.getModel();
-    const sModo = oModel.getProperty("/header/modoSolicitud") as ModoSolicitud;
-    oModel.setProperty("/header", createMaterialHeaderDraft(sModo));
-
-    this.sTipoMaterialPrevio = "";
-    this.limpiarCentroYOrg();
-
-    oModel.setProperty("/ui/formValidated", false);
-    oModel.setProperty("/ui/rangoNumeracion", undefined);
-    oModel.setProperty("/ui/materialExiste", undefined); 
-    this.clearStrip();
+    this.limpiarCaptura();
   }
 
   /**
@@ -485,8 +518,8 @@ export default class DynamicPage extends Controller {
    *
    * Llama a IM_CreateMaterial (Creación) o IM_ExtendMaterial (Extensión) solo para obtener
    * _viewsxcreate, _salesViews y _disChannel reales; no persisten nada (la creación del material
-   * ocurre en IM_SendWF con proceso "C"). El responsable por vista (Custom 1) se sigue resolviendo
-   * contra el mock `responsableVista` hasta conectar GAP_P2P_07.
+   * ocurre en IM_SendWF con proceso "C"). La descripción y los responsables de cada vista vienen de
+   * `_viewsxcreate` (Custom 1, por centro, tipo de material, exportación y modo de proceso).   
   */
   public async onConfirmarDatos(_oEvent: Button$PressEvent): Promise<void> {
     const oModel = this.getModel();
@@ -505,19 +538,9 @@ export default class DynamicPage extends Controller {
         return;
       }
 
-      const aResponsables = this.getConfigRows<ResponsableVistaConfig>("responsableVista").filter(
-        (r) => r.centro === oHeader.centro && r.tipoMaterial === oHeader.tipoMaterial && r.materialExportacion === oHeader.materialExportacion
-      );
-      const fnResolverResponsable = (sVista: string): { descripcionVista: string; usuarioResponsable: string; usuarioResponsable2?: string } | undefined => {
-        const oResp = aResponsables.find((r) => r.vista === sVista);
-        return oResp
-          ? { descripcionVista: oResp.descripcionVista, usuarioResponsable: oResp.usuarioResponsable1, usuarioResponsable2: oResp.usuarioResponsable2 }
-          : undefined;
-      };
+      oModel.setProperty("/vistasCrear", AltExtMaterialService.mapViewsXCreateToVistasConfig(oResult._viewsxcreate, oResult._viewsWF));
+      oModel.setProperty("/vistasVenta", oResult._salesViews.map((v) => ({ material: v.material, orgVentas: v.orgventas, canalDistribucion: v.canaldistribucion })));
 
-      oModel.setProperty("/vistasCrear", AltExtMaterialService.mapViewsXCreateToVistasConfig(oResult._viewsxcreate, oResult._viewsWF, fnResolverResponsable));
-      oModel.setProperty("/vistasVenta", oResult._salesViews.map((v) => ({ material: v.material, orgVentas: v.orgventas, canalDistribucion: v.canaldistribucion }))
-      );
       oModel.setProperty(
         "/canalesConf",
         oResult._disChannel.map((c) => ({ orgVentas: c.orgVtas, canalDistribucion: c.canalDis }))
@@ -562,7 +585,10 @@ export default class DynamicPage extends Controller {
     const oContexto: ContextoValidacionAgregar = {
       tipoMaterial: oHeader.tipoMaterial,
       orgVentas: oHeader.orgVentas,
-      canalesConfigurados: (oModel.getProperty("/canalesConf") as { orgVentas: string; canalDistribucion: string }[]) || []
+      canalesConfigurados: (oModel.getProperty("/canalesConf") as { orgVentas: string; canalDistribucion: string }[]) || [],
+      centro: oHeader.centro,
+      exportacionTexto: this.texto(oHeader.materialExportacion ? "ctxSi" : "ctxNo"),
+      modoTexto: this.texto(oHeader.modoProceso === "M" ? "lblFabricacion" : "lblDistribucion")
     };
 
     const oResultado = this.getVistasManager().validarAgregar(oContexto, aVistas);
@@ -623,7 +649,9 @@ export default class DynamicPage extends Controller {
     oModel.setProperty("/vistasCrear", []);
     oModel.setProperty("/vistasVenta", []);
     oModel.setProperty("/canalesConf", []);
+
     this.clearStrip();
+    this.recalcFormValidated();
   }
 
   public onEliminarGridRow(oEvent: Button$PressEvent): void {
@@ -649,9 +677,28 @@ export default class DynamicPage extends Controller {
     oModel.setProperty("/ui/hayRegistrosEnGrid", aGrid.some((r) => this.esEnviable(r)));
   }
 
+  /** Icono de mensaje de una fila del grid: abre un popover con el estado y el texto completo (evita estirar la fila). */
+  public async onVerMensaje(oEvent: Event): Promise<void> {
+    const oOrigen = oEvent.getSource() as Control;
+    const sPath = oOrigen.getBindingContext()?.getPath();
+    if (!sPath) {
+      return;
+    }
+    if (!this.oMensajePopover) {
+      this.oMensajePopover = (await Fragment.load({
+        id: this.getView()!.getId(),
+        name: "com.alen.mm.wfaltamat.view.fragments.MensajeFila",
+        controller: this
+      })) as Popover;
+      this.getView()!.addDependent(this.oMensajePopover);
+    }
+    this.oMensajePopover.bindElement(sPath);
+    this.oMensajePopover.openBy(oOrigen);
+  }
+
   // --- Footer global: Enviar a Workflow / Cancelar -----------------------------------------------
 
-  /** Cambiar a `true` cuando Janeth confirme que SENDWF ya no ejecuta BAPI_MATERIAL_SAVEDATA con proceso "E". */
+  /** Habilita el envío de Extensión (proceso "E"): SENDWF solo lanza el WF; la BAPI de creación corre únicamente con "C". */
   private static readonly EXTENSION_ENVIO_HABILITADO = true;
 
   private esEnviable(oFila: ResultGrid): boolean {
@@ -717,13 +764,19 @@ export default class DynamicPage extends Controller {
       this.getView()!.setBusy(false);
     }
 
-    oModel.setProperty("/grid", aGrid.slice());
+    oModel.setProperty("/grid", aGrid.filter((r) => r.estado !== "S"));
     this.syncHayRegistrosEnGrid();
 
     const iEnviadas = aProcesadas.filter((r) => r.estado === "S").length;
     const iSinWf = aProcesadas.filter((r) => r.estado === "W").length;
     const iErrores = aProcesadas.filter((r) => r.estado === "E").length;
-    this.showStrip(this.texto("msgEnvioResumen", [String(iEnviadas), String(iSinWf), String(iErrores)]), iSinWf + iErrores === 0 ? "Success" : "Warning");
+    
+    /*Detalle de material y estado de las filas E/W */
+    const aDetalle = aProcesadas
+      .filter((r) => r.estado === "E" || r.estado === "W")
+      .map((r) => this.texto(r.estado === "E" ? "msgEnvioDetalleE" : "msgEnvioDetalleW", [r.material || this.texto("msgMaterialSinNumero")]));
+    const sResumen = this.texto("msgEnvioResumen", [String(iEnviadas), String(iSinWf), String(iErrores)]);
+    this.showStrip(aDetalle.length > 0 ? `${sResumen} ${aDetalle.join("; ")}` : sResumen, iSinWf + iErrores === 0 ? "Success" : "Warning");
   }
 
   /** Traduce las filas de respuesta de una línea (S/W/E) al estado de la fila del grid; gana el peor estado. */
@@ -737,7 +790,7 @@ export default class DynamicPage extends Controller {
     const bError = aResultados.some((r) => r.id !== "S" && r.id !== "W");
     const bSinWf = aResultados.some((r) => r.id === "W");
 
-    if (bError) { 
+    if (bError) {
       oFila.estado = "E";
     } else if (bSinWf) {
       oFila.estado = "W";
@@ -751,10 +804,11 @@ export default class DynamicPage extends Controller {
     }
 
     const sMensaje = aResultados
-      .map((r) => r.mensaje)
-      .filter((m) => !!m)
-      .join(" ");
-    oFila.mensaje = oFila.estado === "W" ? `${sMensaje} ${this.texto("msgMaterialCreadoSinWf", [sMaterial])}`.trim() : sMensaje;
+          .map((r) => r.mensaje)
+          .filter((m) => !!m)
+          .join("\n");
+          
+    oFila.mensaje = oFila.estado === "W" ? `${sMensaje}\n${this.texto("msgMaterialCreadoSinWf", [sMaterial])}`.trim() : sMensaje;
   }
 
   /** Botón "Cancelar" — descarta la sesión completa (propuesta-3-dynamic-page.md, Regla B). */

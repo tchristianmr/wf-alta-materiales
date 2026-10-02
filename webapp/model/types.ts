@@ -155,6 +155,9 @@ export interface ContextoValidacionAgregar {
   tipoMaterial: string;
   orgVentas: string;
   canalesConfigurados: { orgVentas: string; canalDistribucion: string }[];
+  centro: string;
+  exportacionTexto: string;
+  modoTexto: string;
 }
 
 // ================================================================================================
@@ -218,8 +221,8 @@ export interface RMaterialRAP {
   mensaje: string;
   _createdView: { idView: string; descripcion: string }[];
   _viewsWF: { idView: string; descripcion: string; fechacreacion: string; usuarios: string }[];
-  _disChannel: { orgVtas: string; canalDis: string }[];
-  _viewsxcreate: { idsec: number; vista: string; creada: boolean; enWF: boolean; wiUsuario: string }[];
+  _disChannel: { orgVtas: string; canalDis: string }[];  
+  _viewsxcreate: { idsec: number; vista: string; descripcion: string; creada: boolean; enWF: boolean; wiUsuario: string }[]; 
   _salesViews: { material: string; orgventas: string; canaldistribucion: string }[];
 }
 

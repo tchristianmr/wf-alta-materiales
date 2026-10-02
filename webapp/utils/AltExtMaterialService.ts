@@ -130,26 +130,23 @@ export default class AltExtMaterialService {
     };
   }
 
-  public static mapViewsXCreateToVistasConfig(
+   public static mapViewsXCreateToVistasConfig(
     aViewsXCreate: RMaterialRAP["_viewsxcreate"],
-    aViewsWF: RMaterialRAP["_viewsWF"],
-    fnResolverResponsable: (sVista: string) => { descripcionVista: string; usuarioResponsable: string; usuarioResponsable2?: string } | undefined
+    aViewsWF: RMaterialRAP["_viewsWF"]
   ): VistasConfig[] {
     return [...aViewsXCreate].sort((a, b) => a.idsec - b.idsec).map((v) => {
-      const oResponsable = fnResolverResponsable(v.vista);
       const oWf = aViewsWF.find((w) => w.idView === v.vista);
       return {
         secuencia: v.idsec,
         vista: v.vista,
-        descripcionVista: oResponsable?.descripcionVista ?? "",
-        usuarioResponsable: oResponsable?.usuarioResponsable ?? "",
-        usuarioResponsable2: oResponsable?.usuarioResponsable2,
+        descripcionVista: v.descripcion ?? "",
+        usuarioResponsable: (v.wiUsuario ?? "").split("/").filter((u) => !!u).join(", "),
         crear: false,
         creada: v.creada,
         enWF: v.enWF,
         wiTitulo: oWf?.descripcion,
         wiFechaCreacion: oWf?.fechacreacion,
-        wiUsuario: (oWf?.usuarios ?? "").replace(/\/+$/, "") || v.wiUsuario || undefined //oWf?.usuarios || v.wiUsuario || undefined
+        wiUsuario: oWf?.usuarios || undefined
       };
     });
   }
